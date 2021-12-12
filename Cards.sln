@@ -1,8 +1,35 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrKWatkins.Cards", "MrKWatkins.Cards\MrKWatkins.Cards.csproj", "{DECFAD51-8532-4EE0-A1AD-F1CD79511211}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{AA2A3531-840B-46F4-9B3B-A49CA1A1E043}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		.gitignore = .gitignore
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrKWatkins.Cards.Tests", "MrKWatkins.Cards.Tests\MrKWatkins.Cards.Tests.csproj", "{696D3CD7-2175-4179-9EA9-ECC80A869055}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrKWatkins.Cards.Benchmarks", "MrKWatkins.Cards.Benchmarks\MrKWatkins.Cards.Benchmarks.csproj", "{4619AAB8-8ADB-4321-8A2C-6AE47D4A0D77}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DECFAD51-8532-4EE0-A1AD-F1CD79511211}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DECFAD51-8532-4EE0-A1AD-F1CD79511211}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DECFAD51-8532-4EE0-A1AD-F1CD79511211}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DECFAD51-8532-4EE0-A1AD-F1CD79511211}.Release|Any CPU.Build.0 = Release|Any CPU
+		{696D3CD7-2175-4179-9EA9-ECC80A869055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{696D3CD7-2175-4179-9EA9-ECC80A869055}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{696D3CD7-2175-4179-9EA9-ECC80A869055}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{696D3CD7-2175-4179-9EA9-ECC80A869055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4619AAB8-8ADB-4321-8A2C-6AE47D4A0D77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4619AAB8-8ADB-4321-8A2C-6AE47D4A0D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4619AAB8-8ADB-4321-8A2C-6AE47D4A0D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4619AAB8-8ADB-4321-8A2C-6AE47D4A0D77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
