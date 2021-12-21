@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Contracts;
+using System.Numerics;
 using MrKWatkins.Cards.Text;
 
 namespace MrKWatkins.Cards;
@@ -15,6 +16,22 @@ public readonly struct Card : IEquatable<Card>
 
     public Suit Suit { get; }
     
+    /// <summary>
+    /// Gets the zero-based index of the card in a full deck, suit and rank ordered.
+    /// </summary>
+    internal int Index => (int)Suit * 13 + (int)Rank;
+
+    [Pure]
+    internal static Card FromIndex(int index) => new ((Rank)(index % 13), (Suit)(index / 13));
+
+    /// <summary>
+    /// Gets a ulong with a single bit set at position <see cref="Index"/>.
+    /// </summary>
+    internal ulong BitIndex => 1UL << Index;
+    
+    [Pure]
+    internal static Card FromBitIndex(ulong bitIndex) => FromIndex(BitOperations.TrailingZeroCount(bitIndex));
+
     public bool Equals(Card other) => Suit == other.Suit && Rank == other.Rank;
 
     public override bool Equals(object? obj) => obj is Card other && Equals(other);
