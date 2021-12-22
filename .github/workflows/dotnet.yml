@@ -1,0 +1,38 @@
+name: .NET Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  BuildAndTest:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    env:
+      config: 'Release'
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Restore Dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore --configuration $config
+
+    - name: Test
+      run: dotnet test --no-restore --no-build --configuration $config --logger "trx;LogFileName=test-results.trx"
+
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()
+      with:
+        name: Test Results
+        path: MrKWatkins.Cards.Tests/TestResults/test-results.trx
+        reporter: dotnet-trx

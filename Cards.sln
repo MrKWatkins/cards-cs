@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{AA2A3531
 		Directory.Build.props = Directory.Build.props
 		.gitignore = .gitignore
 		.editorconfig = .editorconfig
+		dotnet.yml = .github/workflows/dotnet.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrKWatkins.Cards.Tests", "MrKWatkins.Cards.Tests\MrKWatkins.Cards.Tests.csproj", "{696D3CD7-2175-4179-9EA9-ECC80A869055}"
