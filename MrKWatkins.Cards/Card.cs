@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Numerics;
+using MrKWatkins.Cards.Collections;
 using MrKWatkins.Cards.Text;
 
 namespace MrKWatkins.Cards;
@@ -52,14 +53,5 @@ public readonly struct Card : IEquatable<Card>
     /// Returns a full deck of cards in suit then rank order, i.e AS, 2S, 3S..., KS, AH, 2H, etc.
     /// </summary>
     [Pure]
-    public static IEnumerable<Card> FullDeck()
-    {
-        foreach (var suit in Suits)
-        {
-            foreach (var rank in Ranks)
-            {
-                yield return new Card(rank, suit);
-            }
-        }
-    }
+    public static IEnumerable<Card> FullDeck() => CardSet.CreateFullDeck();
 }

@@ -1,3 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
+using MrKWatkins.Cards.Benchmarks;
 
-BenchmarkRunner.Run(typeof(Program).Assembly);
+BenchmarkRunner.Run<FullDeckBenchmark>();
