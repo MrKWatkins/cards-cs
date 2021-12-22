@@ -62,7 +62,7 @@ public sealed class CardFormatter : IFormatter<Card>
         this.values = values;
     }
 
-    public string Format(Card value) => values[(int)value.Suit * 13 + (int)value.Rank];
+    public string Format(Card value) => values[value.Index];
 
     public void AppendFormat(StringBuilder stringBuilder, Card value) => stringBuilder.Append(Format(value));
 }

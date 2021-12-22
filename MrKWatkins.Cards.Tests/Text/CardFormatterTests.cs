@@ -1,3 +1,4 @@
+using FluentAssertions;
 using MrKWatkins.Cards.Text;
 using NUnit.Framework;
 
@@ -5,6 +6,10 @@ namespace MrKWatkins.Cards.Tests.Text;
 
 public sealed class CardFormatterTests : FormatterTestFixture
 {
+    [Test]
+    public void Constructor_ThrowsIfNot52Cards() =>
+        FluentActions.Invoking(() => new CardFormatter("One", "Two")).Should().Throw<ArgumentException>();
+    
     [TestCase(Rank.Ace, Suit.Spades, "AS")]
     [TestCase(Rank.Five, Suit.Hearts, "5H")]
     [TestCase(Rank.Ten, Suit.Diamonds, "10D")]
