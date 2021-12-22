@@ -73,14 +73,14 @@ public sealed class CardSet : MutableCardSet
         {
             ValidateVersion();
 
-            bitIndices = bitIndices == NotStarted ? cardSet.BitIndices : bitIndices.ResetRightmostBit();
+            bitIndices = bitIndices == NotStarted ? cardSet.BitIndices : bitIndices.ResetLowestSetBit();
             
             if (bitIndices == 0UL)
             {
                 return false;
             }
             
-            current = Card.FromBitIndex(bitIndices.ExtractRightmostBit());
+            current = Card.FromBitIndex(bitIndices.ExtractLowestSetBit());
             return true;
         }
 

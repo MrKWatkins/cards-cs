@@ -18,14 +18,14 @@ internal struct BitIndexEnumerator : IEnumerator<Card>
 
     public bool MoveNext()
     {
-        bitIndices = bitIndices == NotStarted ? startBitIndices : bitIndices.ResetRightmostBit();
+        bitIndices = bitIndices == NotStarted ? startBitIndices : bitIndices.ResetLowestSetBit();
             
         if (bitIndices == 0UL)
         {
             return false;
         }
             
-        current = Card.FromBitIndex(bitIndices.ExtractRightmostBit());
+        current = Card.FromBitIndex(bitIndices.ExtractLowestSetBit());
         return true;
     }
 

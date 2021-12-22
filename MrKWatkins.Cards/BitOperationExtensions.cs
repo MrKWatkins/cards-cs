@@ -1,5 +1,6 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics.X86;
 
 namespace MrKWatkins.Cards;
 
@@ -20,8 +21,9 @@ internal static class BitOperationExtensions
     /// </remarks>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal static ulong ResetRightmostBit(this ulong value) => value & (value - 1);
-    
+    internal static ulong ResetLowestSetBit(this ulong value) => 
+        Bmi1.X64.IsSupported ? Bmi1.X64.ResetLowestSetBit(value) : value & (value - 1);
+
     /// <summary>
     /// Returns a value with a single bit set, corresponding to the rightmost bit of <see cref="value"/>, or 0 if value is 0.
     /// </summary>
@@ -30,5 +32,6 @@ internal static class BitOperationExtensions
     /// </remarks>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal static ulong ExtractRightmostBit(this ulong value) => value & Negate(value);
+    internal static ulong ExtractLowestSetBit(this ulong value) => 
+        Bmi1.X64.IsSupported ? Bmi1.X64.ExtractLowestSetBit(value) : value & Negate(value);
 }

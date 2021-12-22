@@ -23,7 +23,7 @@ public sealed class BitOperationExtensionsTests
     [TestCase(0b1110UL, 0b1100UL)]
     [TestCase(0b1100UL, 0b1000UL)]
     [TestCase(0b1000UL, 0b0000UL)]
-    public void ResetRightmostBit(ulong value, ulong expected) => value.ResetRightmostBit().Should().Be(expected);
+    public void ResetRightmostBit(ulong value, ulong expected) => value.ResetLowestSetBit().Should().Be(expected);
     
     [TestCase(0UL, 0UL)]
     [TestCase(0b1111UL, 0b0001UL)]
@@ -31,5 +31,5 @@ public sealed class BitOperationExtensionsTests
     [TestCase(0b1110UL, 0b0010UL)]
     [TestCase(0b1100UL, 0b0100UL)]
     [TestCase(0b1000UL, 0b1000UL)]
-    public void ExtractRightmostBit(ulong value, ulong expected) => value.ExtractRightmostBit().Should().Be(expected);
+    public void ExtractRightmostBit(ulong value, ulong expected) => value.ExtractLowestSetBit().Should().Be(expected);
 }
