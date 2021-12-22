@@ -7,7 +7,7 @@ namespace MrKWatkins.Cards.Collections;
 /// <summary>
 /// A unique mutable set of <see cref="Card"/>s.
 /// </summary>
-public sealed class CardSet : ISet<Card>, IReadOnlyCardSet
+public sealed class CardSet : ICardSet
 {
     private ulong bitIndices;
     private int version;
@@ -32,12 +32,12 @@ public sealed class CardSet : ISet<Card>, IReadOnlyCardSet
     }
 
     public CardSet([JetBrains.Annotations.InstantHandle] IEnumerable<Card> cards)
-        : this(SetOperations.ToBitIndices(cards))
+        : this(BitIndexOperations.ToBitIndices(cards))
     {
     }
 
     [Pure]
-    public static CardSet CreateFullDeck() => new (SetOperations.FullDeckBitIndices);
+    public static CardSet CreateFullDeck() => new (BitIndexOperations.FullDeckBitIndices);
 
     ulong IReadOnlyCardSet.BitIndices => bitIndices;
     
@@ -57,14 +57,14 @@ public sealed class CardSet : ISet<Card>, IReadOnlyCardSet
     
     void ICollection<Card>.Add(Card card) => Add(card);
 
-    public bool Add(Card card) => Mutate(SetOperations.Union, card.BitIndex);
+    public bool Add(Card card) => Mutate(BitIndexOperations.Union, card.BitIndex);
 
     void ICollection<Card>.Clear() => Clear();
 
     public bool Clear() => Mutate((_, _) => 0UL, 0UL);
 
     [Pure]
-    public bool Contains(Card card) => (bitIndices & card.BitIndex) != 0;
+    public bool Contains(Card card) => BitIndexOperations.Contains(bitIndices, card.BitIndex);
 
     public void CopyTo(Card[] array, int arrayIndex)
     {
@@ -86,7 +86,7 @@ public sealed class CardSet : ISet<Card>, IReadOnlyCardSet
     [Pure]
     public bool IsReadOnly => false;
 
-    public bool Remove(Card card) => Mutate(SetOperations.Except, card.BitIndex);
+    public bool Remove(Card card) => Mutate(BitIndexOperations.Except, card.BitIndex);
 
     [Pure]
     public IEnumerator<Card> GetEnumerator() => new Enumerator(this);
@@ -94,62 +94,62 @@ public sealed class CardSet : ISet<Card>, IReadOnlyCardSet
     [Pure]
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    private void ExceptWith(ulong otherBitIndices) => Mutate(SetOperations.Except, otherBitIndices);
+    private void ExceptWith(ulong otherBitIndices) => Mutate(BitIndexOperations.Except, otherBitIndices);
 
     public void ExceptWith(IReadOnlyCardSet other) => ExceptWith(other.BitIndices);
 
-    public void ExceptWith(IEnumerable<Card> other) => ExceptWith(SetOperations.ToBitIndices(other));
+    public void ExceptWith(IEnumerable<Card> other) => ExceptWith(BitIndexOperations.ToBitIndices(other));
 
-    private void IntersectWith(ulong otherBitIndices) => Mutate(SetOperations.Intersect, otherBitIndices);
+    private void IntersectWith(ulong otherBitIndices) => Mutate(BitIndexOperations.Intersect, otherBitIndices);
     
     public void IntersectWith(IReadOnlyCardSet other) => IntersectWith(other.BitIndices);
 
-    public void IntersectWith(IEnumerable<Card> other) => IntersectWith(SetOperations.ToBitIndices(other));
+    public void IntersectWith(IEnumerable<Card> other) => IntersectWith(BitIndexOperations.ToBitIndices(other));
 
     [Pure]
-    public bool IsProperSubsetOf(ulong other) => SetOperations.IsProperSubsetOf(bitIndices, other);
+    private bool IsProperSubsetOf(ulong other) => BitIndexOperations.IsProperSubsetOf(bitIndices, other);
     
     [Pure]
     public bool IsProperSubsetOf(IReadOnlyCardSet other) => IsProperSubsetOf(other.BitIndices);
 
     [Pure]
-    public bool IsProperSubsetOf(IEnumerable<Card> other) => IsProperSubsetOf(SetOperations.ToBitIndices(other));
+    public bool IsProperSubsetOf(IEnumerable<Card> other) => IsProperSubsetOf(BitIndexOperations.ToBitIndices(other));
 
     [Pure]
-    public bool IsProperSupersetOf(ulong other) => SetOperations.IsProperSupersetOf(bitIndices, other);
+    private bool IsProperSupersetOf(ulong other) => BitIndexOperations.IsProperSupersetOf(bitIndices, other);
 
     [Pure]
     public bool IsProperSupersetOf(IReadOnlyCardSet other) => IsProperSupersetOf(other.BitIndices);
 
     [Pure]
-    public bool IsProperSupersetOf(IEnumerable<Card> other) => IsProperSupersetOf(SetOperations.ToBitIndices(other));
+    public bool IsProperSupersetOf(IEnumerable<Card> other) => IsProperSupersetOf(BitIndexOperations.ToBitIndices(other));
 
     [Pure]
-    public bool IsSubsetOf(ulong other) => SetOperations.IsSubsetOf(bitIndices, other);
+    private bool IsSubsetOf(ulong other) => BitIndexOperations.IsSubsetOf(bitIndices, other);
 
     [Pure]
     public bool IsSubsetOf(IReadOnlyCardSet other) => IsSubsetOf(other.BitIndices);
 
     [Pure]
-    public bool IsSubsetOf(IEnumerable<Card> other) => IsSubsetOf(SetOperations.ToBitIndices(other));
+    public bool IsSubsetOf(IEnumerable<Card> other) => IsSubsetOf(BitIndexOperations.ToBitIndices(other));
 
     [Pure]
-    public bool IsSupersetOf(ulong other) => SetOperations.IsSupersetOf(bitIndices, other);
+    private bool IsSupersetOf(ulong other) => BitIndexOperations.IsSupersetOf(bitIndices, other);
     
     [Pure]
     public bool IsSupersetOf(IReadOnlyCardSet other) => IsSupersetOf(other.BitIndices);
 
     [Pure]
-    public bool IsSupersetOf(IEnumerable<Card> other) => IsSupersetOf(SetOperations.ToBitIndices(other));
+    public bool IsSupersetOf(IEnumerable<Card> other) => IsSupersetOf(BitIndexOperations.ToBitIndices(other));
 
     [Pure]
-    private bool Overlaps(ulong otherBitIndices) => SetOperations.Overlaps(bitIndices, otherBitIndices);
+    private bool Overlaps(ulong otherBitIndices) => BitIndexOperations.Overlaps(bitIndices, otherBitIndices);
     
     [Pure]
     public bool Overlaps(IReadOnlyCardSet other) => Overlaps(other.BitIndices);
 
     [Pure]
-    public bool Overlaps(IEnumerable<Card> other) => Overlaps(SetOperations.ToBitIndices(other));
+    public bool Overlaps(IEnumerable<Card> other) => Overlaps(BitIndexOperations.ToBitIndices(other));
 
     [Pure]
     private bool SetEquals(ulong otherBitIndices) => bitIndices == otherBitIndices;
@@ -158,19 +158,19 @@ public sealed class CardSet : ISet<Card>, IReadOnlyCardSet
     public bool SetEquals(IReadOnlyCardSet other) => SetEquals(other.BitIndices);
 
     [Pure]
-    public bool SetEquals(IEnumerable<Card> other) => SetEquals(SetOperations.ToBitIndices(other));
+    public bool SetEquals(IEnumerable<Card> other) => SetEquals(BitIndexOperations.ToBitIndices(other));
 
-    public void SymmetricExceptWith(ulong otherBitIndices) => Mutate(SetOperations.SymmetricExceptWith, otherBitIndices);
+    private void SymmetricExceptWith(ulong otherBitIndices) => Mutate(BitIndexOperations.SymmetricExcept, otherBitIndices);
 
     public void SymmetricExceptWith(IReadOnlyCardSet other) => SymmetricExceptWith(other.BitIndices);
 
-    public void SymmetricExceptWith(IEnumerable<Card> other) => SymmetricExceptWith(SetOperations.ToBitIndices(other));
+    public void SymmetricExceptWith(IEnumerable<Card> other) => SymmetricExceptWith(BitIndexOperations.ToBitIndices(other));
 
-    private void UnionWith(ulong otherBitIndices) => Mutate(SetOperations.Union, otherBitIndices);
+    private void UnionWith(ulong otherBitIndices) => Mutate(BitIndexOperations.Union, otherBitIndices);
 
     public void UnionWith(IReadOnlyCardSet other) => UnionWith(other.BitIndices);
 
-    public void UnionWith(IEnumerable<Card> other) => UnionWith(SetOperations.ToBitIndices(other));
+    public void UnionWith(IEnumerable<Card> other) => UnionWith(BitIndexOperations.ToBitIndices(other));
 
     private struct Enumerator : IEnumerator<Card>
     {
@@ -222,7 +222,7 @@ public sealed class CardSet : ISet<Card>, IReadOnlyCardSet
 
         object IEnumerator.Current => Current;
 
-        void IEnumerator.Reset()
+        public void Reset()
         {
             ValidateVersion();
 

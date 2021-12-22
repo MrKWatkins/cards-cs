@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace MrKWatkins.Cards.Collections;
 
-internal static class SetOperations
+internal static class BitIndexOperations
 {
     internal const ulong FullDeckBitIndices = 0b00000000_00001111_11111111_11111111_11111111_11111111_11111111_11111111UL;
     
@@ -17,6 +17,10 @@ internal static class SetOperations
 
         return cards.Aggregate(0UL, (current, card) => current | card.BitIndex);
     }
+
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    internal static bool Contains(ulong x, ulong y) => (x & y) != 0;
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -48,7 +52,7 @@ internal static class SetOperations
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    internal static ulong SymmetricExceptWith(ulong xBitIndices, ulong yBitIndices) => xBitIndices ^ yBitIndices;
+    internal static ulong SymmetricExcept(ulong xBitIndices, ulong yBitIndices) => xBitIndices ^ yBitIndices;
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

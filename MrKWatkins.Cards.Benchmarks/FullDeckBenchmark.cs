@@ -40,6 +40,17 @@ public class FullDeckBenchmark
         return list;
     }
 
+    [Benchmark]
+    public IReadOnlyList<Card> ImmutableCardSet() => Collections.ImmutableCardSet.FullDeck.ToList();
+
+    [Benchmark]
+    public IReadOnlyList<Card> ImmutableCardSetPreAllocate()
+    {
+        var list = new List<Card>(52);
+        list.AddRange(Collections.ImmutableCardSet.FullDeck);
+        return list;
+    }
+
     [Pure]
     private static IEnumerable<Card> Enumerate_NestedForLoop()
     {
