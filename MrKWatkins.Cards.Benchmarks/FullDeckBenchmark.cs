@@ -7,13 +7,24 @@ namespace MrKWatkins.Cards.Benchmarks;
 public class FullDeckBenchmark
 {
     [Benchmark(Baseline = true)]
-    public IReadOnlyList<Card> NestedForLoop() => Enumerate_NestedForLoop().ToList();
+    public IReadOnlyList<Card> NestedForeachLoops() => Enumerate_NestedForeachLoops().ToList();
 
     [Benchmark]
-    public IReadOnlyList<Card> NestedForLoopPreAllocate()
+    public IReadOnlyList<Card> NestedForeachLoopsPreAllocate()
     {
         var list = new List<Card>(52);
-        list.AddRange(Enumerate_NestedForLoop());
+        list.AddRange(Enumerate_NestedForeachLoops());
+        return list;
+    }
+    
+    [Benchmark]
+    public IReadOnlyList<Card> NestedForLoops() => Enumerate_NestedForLoops().ToList();
+
+    [Benchmark]
+    public IReadOnlyList<Card> NestedForLoopsPreAllocate()
+    {
+        var list = new List<Card>(52);
+        list.AddRange(Enumerate_NestedForLoops());
         return list;
     }
     
@@ -52,13 +63,25 @@ public class FullDeckBenchmark
     }
 
     [Pure]
-    private static IEnumerable<Card> Enumerate_NestedForLoop()
+    private static IEnumerable<Card> Enumerate_NestedForeachLoops()
     {
         foreach (var suit in Card.Suits)
         {
             foreach (var rank in Card.Ranks)
             {
                 yield return new Card(rank, suit);
+            }
+        }
+    }
+    
+    [Pure]
+    private static IEnumerable<Card> Enumerate_NestedForLoops()
+    {
+        for (var suit = 0; suit < 4; suit++)
+        {
+            for (var rank = 0; rank < 13; rank++)
+            {
+                yield return new Card((Rank) rank, (Suit) suit);
             }
         }
     }
