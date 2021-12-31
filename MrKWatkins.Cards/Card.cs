@@ -36,7 +36,7 @@ public readonly struct Card : IEquatable<Card>
 
     public override bool Equals(object? obj) => obj is Card other && Equals(other);
 
-    public override int GetHashCode() => HashCode.Combine((int)Suit, (int)Rank);
+    public override int GetHashCode() => HashCode.Combine(Suit, Rank);
 
     public static bool operator ==(Card left, Card right) => left.Equals(right);
 

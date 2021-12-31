@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using System.Text;
 
 namespace MrKWatkins.Cards.Text;
@@ -9,26 +10,31 @@ public sealed class CardFormatter : IFormatter<Card>
     /// <summary>
     /// Formats using upper case letters and numbers, e.g. Ace of spades = AS, ten of hearts = 10H, queen of diamonds = QD.
     /// </summary>
+    [Pure]
     public static IFormatter<Card> CreateUpperCaseLetters() => new CardFormatter(RankFormatter.CreateUpperCaseLetter(), SuitFormatter.CreateUpperCaseLetter());
     
     /// <summary>
     /// Formats using upper case letters and numbers, e.g. Ace of spades = as, ten of hearts = 10h, queen of diamonds = qd.
     /// </summary>
+    [Pure]
     public static IFormatter<Card> CreateLowerCaseLetters() =>  new CardFormatter(RankFormatter.CreateLowerCaseLetter(), SuitFormatter.CreateLowerCaseLetter());
     
     /// <summary>
     /// Formats using title case words, e.g. Ace of spades = Ace of Spades, ten of hearts = Ten of Hearts, queen of diamonds = Queen of Diamonds.
     /// </summary>
+    [Pure]
     public static IFormatter<Card> CreateTitleCaseWords() =>  new CardFormatter(RankFormatter.CreateTitleCaseWord(), SuitFormatter.CreateTitleCaseWord(), " of ");
     
     /// <summary>
     /// Formats using lower case words, e.g. Ace of spades = ace of spades, ten of hearts = ten of hearts, queen of diamonds = queen of diamonds.
     /// </summary>
+    [Pure]
     public static IFormatter<Card> CreateLowerCaseWords() =>  new CardFormatter(RankFormatter.CreateLowerCaseWord(), SuitFormatter.CreateLowerCaseWord(), " of ");
 
     /// <summary>
     /// Formats using Unicode symbols, e.g. Ace of spades = 🂡, ten of hearts = 🂺, queen of diamonds = 🃍.
     /// </summary>
+    [Pure]
     public static IFormatter<Card> CreateSymbols() => new CardFormatter(
         "\U0001F0A1", "\U0001F0A2", "\U0001F0A3", "\U0001F0A4", "\U0001F0A5", "\U0001F0A6", "\U0001F0A7", "\U0001F0A8", "\U0001F0A9", "\U0001F0AA", "\U0001F0AB", "\U0001F0AD", "\U0001F0AE",
         "\U0001F0B1", "\U0001F0B2", "\U0001F0B3", "\U0001F0B4", "\U0001F0B5", "\U0001F0B6", "\U0001F0B7", "\U0001F0B8", "\U0001F0B9", "\U0001F0BA", "\U0001F0BB", "\U0001F0BD", "\U0001F0BE",

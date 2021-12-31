@@ -50,7 +50,6 @@ public sealed class CardSet : MutableCardSet
         return false;
     }
     
-    [Pure]
     public override IEnumerator<Card> GetEnumerator() => new Enumerator(this);
 
     private struct Enumerator : IEnumerator<Card>
