@@ -4,7 +4,12 @@ public sealed class EnumFormat<T> : IndexableFormat<T>
     where T : struct, Enum, IConvertible
 {
     public EnumFormat(bool caseInsensitiveParsing, params string[] values)
-        : base(caseInsensitiveParsing, values)
+        : this(" ", caseInsensitiveParsing, values)
+    {
+    }
+
+    public EnumFormat(string multipleSeparator, bool caseInsensitiveParsing, params string[] values)
+        : base(multipleSeparator, caseInsensitiveParsing, values)
     {
         // The checks on T could go in a static constructor but easier to handle and test instance level exceptions.
         if (Enum.GetUnderlyingType(typeof(T)) != typeof(int))

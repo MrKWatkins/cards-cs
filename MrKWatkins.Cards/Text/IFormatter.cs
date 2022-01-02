@@ -11,5 +11,10 @@ public interface IFormatter<in T>
     [return: NotNullIfNotNull("value")]
     string? Format(T? value);
     
+    [Pure]
+    string Format([JetBrains.Annotations.InstantHandle] IEnumerable<T> values);
+    
     void AppendFormat(StringBuilder stringBuilder, T? value);
+    
+    void AppendFormat(StringBuilder stringBuilder, [JetBrains.Annotations.InstantHandle] IEnumerable<T> values);
 }
