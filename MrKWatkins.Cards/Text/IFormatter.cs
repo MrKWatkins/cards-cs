@@ -5,6 +5,7 @@ using System.Text;
 namespace MrKWatkins.Cards.Text;
 
 public interface IFormatter<in T>
+    where T : notnull
 {
     [Pure]
     [return: NotNullIfNotNull("value")]

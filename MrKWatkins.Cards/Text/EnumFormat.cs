@@ -1,13 +1,10 @@
-using System.Text;
-
 namespace MrKWatkins.Cards.Text;
 
-public sealed class EnumFormatter<T> : IFormatter<T>
+public sealed class EnumFormat<T> : IndexableFormat<T>
     where T : struct, Enum, IConvertible
 {
-    private readonly IReadOnlyList<string> values;
-    
-    public EnumFormatter(params string[] values)
+    public EnumFormat(bool caseInsensitiveParsing, params string[] values)
+        : base(caseInsensitiveParsing, values)
     {
         // The checks on T could go in a static constructor but easier to handle and test instance level exceptions.
         if (Enum.GetUnderlyingType(typeof(T)) != typeof(int))
@@ -26,11 +23,9 @@ public sealed class EnumFormatter<T> : IFormatter<T>
         {
             throw new ArgumentException($"Value must have {enumValues.Length} entries.", nameof(values));
         }
-        
-        this.values = values;
     }
 
-    public string Format(T value) => values[value.ToInt32(null)];
+    protected override int ToIndex(T value) => value.ToInt32(null);
 
-    public void AppendFormat(StringBuilder stringBuilder, T value) => stringBuilder.Append(Format(value));
+    protected override T ToValue(int index) => (T)(object)index;
 }

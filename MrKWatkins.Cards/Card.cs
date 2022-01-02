@@ -42,7 +42,7 @@ public readonly struct Card : IEquatable<Card>
 
     public static bool operator !=(Card left, Card right) => !left.Equals(right);
 
-    public override string ToString() => CardFormatter.Default.Format(this);
+    public override string ToString() => CardFormat.Default.Format(this);
 
     public static IReadOnlyList<Rank> Ranks { get; } = Enum.GetValues<Rank>();
         

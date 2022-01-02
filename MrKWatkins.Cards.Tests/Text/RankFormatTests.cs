@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace MrKWatkins.Cards.Tests.Text;
 
-public sealed class RankFormatterTests : FormatterTestFixture
+public sealed class RankFormatTests : FormatTestFixture
 {
     [TestCase(Rank.Ace, "A")]
     [TestCase(Rank.Two, "2")]
@@ -20,8 +20,8 @@ public sealed class RankFormatterTests : FormatterTestFixture
     [TestCase(Rank.King, "K")]
     public void UpperCaseLetter(Rank rank, string expected)
     {
-        TestFormatter(RankFormatter.CreateUpperCaseLetter, rank, expected);
-        TestFormatter(RankFormatter.Default, rank, expected);
+        TestFormat(RankFormat.CreateUpperCaseLetter, rank, expected);
+        TestFormat(RankFormat.Default, true, rank, expected);
     }
 
     [TestCase(Rank.Ace, "a")]
@@ -37,7 +37,7 @@ public sealed class RankFormatterTests : FormatterTestFixture
     [TestCase(Rank.Jack, "j")]
     [TestCase(Rank.Queen, "q")]
     [TestCase(Rank.King, "k")]
-    public void LowerCaseLetter(Rank rank, string expected) => TestFormatter(RankFormatter.CreateLowerCaseLetter, rank, expected);
+    public void LowerCaseLetter(Rank rank, string expected) => TestFormat(RankFormat.CreateLowerCaseLetter, rank, expected);
 
     [TestCase(Rank.Ace, "A")]
     [TestCase(Rank.Two, "2")]
@@ -52,7 +52,7 @@ public sealed class RankFormatterTests : FormatterTestFixture
     [TestCase(Rank.Jack, "J")]
     [TestCase(Rank.Queen, "Q")]
     [TestCase(Rank.King, "K")]
-    public void UpperCaseLetterTFor10(Rank rank, string expected) => TestFormatter(RankFormatter.CreateUpperCaseLetterTFor10, rank, expected);
+    public void UpperCaseLetterTFor10(Rank rank, string expected) => TestFormat(RankFormat.CreateUpperCaseLetterTFor10, rank, expected);
     
     [TestCase(Rank.Ace, "a")]
     [TestCase(Rank.Two, "2")]
@@ -67,7 +67,7 @@ public sealed class RankFormatterTests : FormatterTestFixture
     [TestCase(Rank.Jack, "j")]
     [TestCase(Rank.Queen, "q")]
     [TestCase(Rank.King, "k")]
-    public void LowerCaseLetterTFor10(Rank rank, string expected) => TestFormatter(RankFormatter.CreateLowerCaseLetterTFor10, rank, expected);
+    public void LowerCaseLetterTFor10(Rank rank, string expected) => TestFormat(RankFormat.CreateLowerCaseLetterTFor10, rank, expected);
 
     [TestCase(Rank.Ace, "Ace")]
     [TestCase(Rank.Two, "Two")]
@@ -82,7 +82,7 @@ public sealed class RankFormatterTests : FormatterTestFixture
     [TestCase(Rank.Jack, "Jack")]
     [TestCase(Rank.Queen, "Queen")]
     [TestCase(Rank.King, "King")]
-    public void TitleCaseWord(Rank rank, string expected) => TestFormatter(RankFormatter.CreateTitleCaseWord, rank, expected);
+    public void TitleCaseWord(Rank rank, string expected) => TestFormat(RankFormat.CreateTitleCaseWord, rank, expected);
     
     [TestCase(Rank.Ace, "ace")]
     [TestCase(Rank.Two, "two")]
@@ -97,5 +97,5 @@ public sealed class RankFormatterTests : FormatterTestFixture
     [TestCase(Rank.Jack, "jack")]
     [TestCase(Rank.Queen, "queen")]
     [TestCase(Rank.King, "king")]
-    public void LowerCaseWord(Rank rank, string expected) => TestFormatter(RankFormatter.CreateLowerCaseWord, rank, expected);
+    public void LowerCaseWord(Rank rank, string expected) => TestFormat(RankFormat.CreateLowerCaseWord, rank, expected);
 }
