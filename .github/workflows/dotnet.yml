@@ -34,5 +34,5 @@ jobs:
       if: success() || failure()
       with:
         name: Test Results
-        path: MrKWatkins.Cards.Tests/TestResults/test-results.trx
+        path: "**/TestResults/test-results.trx"
         reporter: dotnet-trx

@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MrKWatkins.Cards\MrKWatkins.Cards.csproj" />
+        <ProjectReference Include="..\MrKWatkins.Cards.Poker\MrKWatkins.Cards.Poker.csproj" />
     </ItemGroup>
 
 </Project>

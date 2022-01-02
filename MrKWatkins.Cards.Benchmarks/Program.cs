@@ -1,4 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using MrKWatkins.Cards.Benchmarks;
+using MrKWatkins.Cards.Benchmarks.Poker;
 
-BenchmarkRunner.Run<CardFromBitMaskBenchmark>();
+BenchmarkRunner.Run<EvaluateAllBenchmark>();
