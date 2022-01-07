@@ -19,42 +19,42 @@ internal static class BitIndexOperations
     }
 
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool Contains(ulong x, ulong y) => (x & y) != 0;
 
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong Except(ulong bitIndices, ulong toRemove) => bitIndices & ~toRemove;
 
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong Intersect(ulong bitIndices, ulong toRemove) => bitIndices & toRemove;
 
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsProperSubsetOf(ulong xBitIndices, ulong yBitIndices) => xBitIndices != yBitIndices && IsSubsetOf(xBitIndices, yBitIndices);
     
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsSubsetOf(ulong xBitIndices, ulong yBitIndices) => (xBitIndices & yBitIndices) == xBitIndices;
     
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsProperSupersetOf(ulong xBitIndices, ulong yBitIndices) => IsProperSubsetOf(yBitIndices, xBitIndices);
 
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsSupersetOf(ulong xBitIndices, ulong yBitIndices) => IsSubsetOf(yBitIndices, xBitIndices);
 
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool Overlaps(ulong xBitIndices, ulong yBitIndices) => (xBitIndices & yBitIndices) != 0UL;
 
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong SymmetricExcept(ulong xBitIndices, ulong yBitIndices) => xBitIndices ^ yBitIndices;
 
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong Union(ulong xBitIndices, ulong yBitIndices) => xBitIndices | yBitIndices;
 }

@@ -13,7 +13,7 @@ public sealed class ConcurrentCardSet : MutableCardSet
     {
     }
 
-    private ConcurrentCardSet(ulong bitIndices)
+    internal ConcurrentCardSet(ulong bitIndices)
         : base(bitIndices)
     {
     }

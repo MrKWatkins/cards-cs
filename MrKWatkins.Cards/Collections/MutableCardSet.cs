@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Diagnostics.Contracts;
 using System.Numerics;
+using MrKWatkins.Cards.Text;
 
 namespace MrKWatkins.Cards.Collections;
 
@@ -31,6 +32,8 @@ public abstract class MutableCardSet : ICardSet
     }
 
     ulong IReadOnlyCardSet.BitIndices => BitIndices;
+
+    public override string ToString() => CardFormat.Default.Format(this);
     
     private protected ulong BitIndices { get; set; }
     

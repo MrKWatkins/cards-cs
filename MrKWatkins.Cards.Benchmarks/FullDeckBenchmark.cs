@@ -40,25 +40,25 @@ public class FullDeckBenchmark
     }
 
     [Benchmark]
-    public IReadOnlyList<Card> CardSet() => Collections.CardSet.CreateFullDeck().ToList();
+    public IReadOnlyList<Card> CardSet() => Cards.Collections.CardSet.CreateFullDeck().ToList();
 
 
     [Benchmark]
     public IReadOnlyList<Card> CardSetPreAllocate()
     {
         var list = new List<Card>(52);
-        list.AddRange(Collections.CardSet.CreateFullDeck());
+        list.AddRange(Cards.Collections.CardSet.CreateFullDeck());
         return list;
     }
 
     [Benchmark]
-    public IReadOnlyList<Card> ImmutableCardSet() => Collections.ImmutableCardSet.FullDeck.ToList();
+    public IReadOnlyList<Card> ImmutableCardSet() => Cards.Collections.ImmutableCardSet.FullDeck.ToList();
 
     [Benchmark]
     public IReadOnlyList<Card> ImmutableCardSetPreAllocate()
     {
         var list = new List<Card>(52);
-        list.AddRange(Collections.ImmutableCardSet.FullDeck);
+        list.AddRange(Cards.Collections.ImmutableCardSet.FullDeck);
         return list;
     }
 

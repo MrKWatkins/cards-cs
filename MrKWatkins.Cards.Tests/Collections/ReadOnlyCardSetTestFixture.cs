@@ -228,4 +228,7 @@ public abstract class ReadOnlyCardSetTestFixture<T>
 
         Create().SetEquals(Array.Empty<Card>()).Should().BeTrue();
     }
+    
+    [Test]
+    public void ToString_Test() => Create(new Card(Rank.Ace, Suit.Spades), new Card(Rank.Four, Suit.Hearts)).ToString().Should().Be("AS 4H");
 }

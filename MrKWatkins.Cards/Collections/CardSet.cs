@@ -14,7 +14,7 @@ public sealed class CardSet : MutableCardSet
     {
     }
 
-    private CardSet(ulong bitIndices)
+    internal CardSet(ulong bitIndices)
         : base(bitIndices)
     {
     }

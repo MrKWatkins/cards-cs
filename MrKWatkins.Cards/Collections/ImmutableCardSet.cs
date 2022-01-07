@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Numerics;
+using MrKWatkins.Cards.Text;
 
 namespace MrKWatkins.Cards.Collections;
 
@@ -13,7 +14,7 @@ public readonly struct ImmutableCardSet : IImmutableSet<Card>, IReadOnlyCardSet
     
     private readonly ulong bitIndices;
     
-    private ImmutableCardSet(ulong bitIndices)
+    internal ImmutableCardSet(ulong bitIndices)
     {
         this.bitIndices = bitIndices;
     }
@@ -34,6 +35,8 @@ public readonly struct ImmutableCardSet : IImmutableSet<Card>, IReadOnlyCardSet
     }
     
     ulong IReadOnlyCardSet.BitIndices => bitIndices;
+
+    public override string ToString() => CardFormat.Default.Format(this);
 
     public IImmutableSet<Card> Add(Card card) => new ImmutableCardSet(BitIndexOperations.Union(bitIndices, card.BitIndex));
 

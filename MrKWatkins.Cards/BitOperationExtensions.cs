@@ -10,7 +10,7 @@ internal static class BitOperationExtensions
     /// Negates a <see cref="ulong"/> value, i.e. treats it as if it were a <see cref="long"/> and performs the - operation.
     /// </summary>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong Negate(this ulong value) => ~value + 1;
     
     /// <summary>
@@ -20,7 +20,7 @@ internal static class BitOperationExtensions
     /// Hacker's Delight, second edition, page 11.
     /// </remarks>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong ResetLowestSetBit(this ulong value) => 
         Bmi1.X64.IsSupported ? Bmi1.X64.ResetLowestSetBit(value) : value & (value - 1);
 
@@ -31,7 +31,7 @@ internal static class BitOperationExtensions
     /// Hacker's Delight, second edition, page 12.
     /// </remarks>
     [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong ExtractLowestSetBit(this ulong value) => 
         Bmi1.X64.IsSupported ? Bmi1.X64.ExtractLowestSetBit(value) : value & Negate(value);
 }
