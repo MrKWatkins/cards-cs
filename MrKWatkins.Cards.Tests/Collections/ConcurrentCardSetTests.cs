@@ -45,5 +45,5 @@ public sealed class ConcurrentCardSetTests : MutableCardSetTestFixture<Concurren
     }
 
     [Test]
-    public void CreateFullDeck() => ConcurrentCardSet.CreateFullDeck().Should().BeEquivalentTo(Card.FullDeck(), c => c.WithStrictOrdering());
+    public void CreateFullDeck() => ConcurrentCardSet.CreateFullDeck().Should().BeEquivalentTo(Card.FullDeck, c => c.WithStrictOrdering());
 }

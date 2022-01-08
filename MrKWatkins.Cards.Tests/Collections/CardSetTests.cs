@@ -46,7 +46,7 @@ public sealed class CardSetTests : MutableCardSetTestFixture<CardSet>
     }
 
     [Test]
-    public void CreateFullDeck() => CardSet.CreateFullDeck().Should().BeEquivalentTo(Card.FullDeck(), c => c.WithStrictOrdering());
+    public void CreateFullDeck() => CardSet.CreateFullDeck().Should().BeEquivalentTo(Card.FullDeck, c => c.WithStrictOrdering());
 
     [Test]
     public void Add_ModifiesVersionIfSetChanges()

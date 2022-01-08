@@ -43,12 +43,12 @@ public sealed class CardFormat : IndexableFormat<Card>
         "\U0001F0D1", "\U0001F0D2", "\U0001F0D3", "\U0001F0D4", "\U0001F0D5", "\U0001F0D6", "\U0001F0D7", "\U0001F0D8", "\U0001F0D9", "\U0001F0DA", "\U0001F0DB", "\U0001F0DD", "\U0001F0DE");
     
     public CardFormat(string multipleSeparator, bool caseInsensitiveParsing, IFormatter<Rank> rankFormat, IFormatter<Suit> suitFormat)
-        : this(multipleSeparator, caseInsensitiveParsing, Card.FullDeck().Select(c => $"{rankFormat.Format(c.Rank)}{suitFormat.Format(c.Suit)}"))
+        : this(multipleSeparator, caseInsensitiveParsing, Card.FullDeck.Select(c => $"{rankFormat.Format(c.Rank)}{suitFormat.Format(c.Suit)}"))
     {
     }
 
     public CardFormat(string multipleSeparator, bool caseInsensitiveParsing, IFormatter<Rank> rankFormat, IFormatter<Suit> suitFormat, string separator)
-        : this(multipleSeparator, caseInsensitiveParsing, Card.FullDeck().Select(c => $"{rankFormat.Format(c.Rank)}{separator}{suitFormat.Format(c.Suit)}"))
+        : this(multipleSeparator, caseInsensitiveParsing, Card.FullDeck.Select(c => $"{rankFormat.Format(c.Rank)}{separator}{suitFormat.Format(c.Suit)}"))
     {
     }
 

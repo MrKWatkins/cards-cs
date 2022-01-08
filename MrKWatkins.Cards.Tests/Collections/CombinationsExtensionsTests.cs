@@ -28,7 +28,7 @@ public sealed class CombinationsExtensionsTests
     [TestCase(-0)]
     [TestCase(53)]
     public void Combinations_IReadOnlyCollection_InvalidSizeThrows(int size) => 
-        FluentActions.Invoking(() => Card.FullDeck().ToArray().Combinations(size).ToList()).Should().Throw<ArgumentOutOfRangeException>();
+        FluentActions.Invoking(() => Card.FullDeck.ToArray().Combinations(size).ToList()).Should().Throw<ArgumentOutOfRangeException>();
     
     [TestCase(-1)]
     [TestCase(-0)]
@@ -37,34 +37,34 @@ public sealed class CombinationsExtensionsTests
         FluentActions.Invoking(() => ImmutableCardSet.FullDeck.Combinations(size).ToList()).Should().Throw<ArgumentOutOfRangeException>();
 
     [Test]
-    public void Combinations_IEnumerable() => AssertCombinations(Card.FullDeck().Take(7).Combinations(5), 5, 21);
+    public void Combinations_IEnumerable() => AssertCombinations(Card.FullDeck.Take(7).Combinations(5), 5, 21);
 
     [Test]
     public void Combinations_IEnumerable_ShortCircuitForIReadOnlyCollection()
     {
-        IEnumerable<Card> cards = Card.FullDeck().Take(7).ToArray();
+        IEnumerable<Card> cards = Card.FullDeck.Take(7).ToArray();
         AssertCombinations(cards.Combinations(5), 5, 21);
     }
     
     [Test]
     public void Combinations_IEnumerable_ShortCircuitForIReadOnlyCardSet()
     {
-        IEnumerable<Card> cards = new ImmutableCardSet(Card.FullDeck().Take(7));
+        IEnumerable<Card> cards = new ImmutableCardSet(Card.FullDeck.Take(7));
         AssertCombinations(cards.Combinations(5), 5, 21);
     }
     
     [Test]
     public void Combinations_IReadOnlyCollection_ShortCircuitForIReadOnlyCardSet()
     {
-        IReadOnlyCollection<Card> cards = new ImmutableCardSet(Card.FullDeck().Take(7));
+        IReadOnlyCollection<Card> cards = new ImmutableCardSet(Card.FullDeck.Take(7));
         AssertCombinations(cards.Combinations(5), 5, 21);
     }
 
     [Test]
-    public void Combinations_IReadOnlyCollection() => AssertCombinations(Card.FullDeck().Take(7).ToArray().Combinations(5), 5, 21);
+    public void Combinations_IReadOnlyCollection() => AssertCombinations(Card.FullDeck.Take(7).ToArray().Combinations(5), 5, 21);
 
     [Test]
-    public void Combinations_IReadOnlyCardSet() => AssertCombinations(new CardSet(Card.FullDeck().Take(7)).Combinations(5), 5, 21);
+    public void Combinations_IReadOnlyCardSet() => AssertCombinations(new CardSet(Card.FullDeck.Take(7)).Combinations(5), 5, 21);
 
     [Test]
     public void Combinations_FullDeck() => AssertCombinations(ImmutableCardSet.FullDeck.Combinations(5), 5, 2598960);

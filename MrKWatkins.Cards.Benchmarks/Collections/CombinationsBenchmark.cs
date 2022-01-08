@@ -8,7 +8,7 @@ namespace MrKWatkins.Cards.Benchmarks.Collections;
 [MemoryDiagnoser]
 public class CombinationsBenchmark
 {
-    private readonly IReadOnlyList<Card> fullDeck = Card.FullDeck().ToList();
+    private readonly IReadOnlyList<Card> fullDeck = Card.FullDeck.ToList();
 
     [Benchmark(Baseline = true)]
     public void Recursive()

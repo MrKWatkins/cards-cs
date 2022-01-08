@@ -47,7 +47,7 @@ public sealed class ImmutableCardSetTests : ReadOnlyCardSetTestFixture<Immutable
     public void Empty() => ImmutableCardSet.Empty.Should().BeEmpty();
 
     [Test]
-    public void FullDeck() => ImmutableCardSet.FullDeck.Should().BeEquivalentTo(Card.FullDeck(), c => c.WithStrictOrdering());
+    public void FullDeck() => ImmutableCardSet.FullDeck.Should().BeEquivalentTo(Card.FullDeck, c => c.WithStrictOrdering());
 
     [Test]
     public void Add()
