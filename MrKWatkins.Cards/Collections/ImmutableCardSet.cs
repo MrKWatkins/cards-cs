@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
-using System.Numerics;
 using MrKWatkins.Cards.Text;
 
 namespace MrKWatkins.Cards.Collections;
@@ -44,7 +43,7 @@ public readonly struct ImmutableCardSet : IImmutableSet<Card>, IReadOnlyCardSet
     
     public bool Contains(Card card) => BitIndexOperations.Contains(bitIndices, card.BitIndex);
 
-    public int Count => BitOperations.PopCount(bitIndices);
+    public int Count => bitIndices.PopCount();
 
     public IImmutableSet<Card> Remove(Card card) => new ImmutableCardSet(BitIndexOperations.Except(bitIndices, card.BitIndex));
 

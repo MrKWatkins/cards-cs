@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Diagnostics.Contracts;
-using System.Numerics;
 using MrKWatkins.Cards.Text;
 
 namespace MrKWatkins.Cards.Collections;
@@ -64,7 +63,7 @@ public abstract class MutableCardSet : ICardSet
         }
     }
 
-    public int Count => BitOperations.PopCount(BitIndices);
+    public int Count => BitIndices.PopCount();
 
     public bool IsReadOnly => false;
 
