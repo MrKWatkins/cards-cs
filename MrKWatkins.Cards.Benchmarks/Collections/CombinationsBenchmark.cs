@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
+using System.Diagnostics.Contracts;
 using BenchmarkDotNet.Attributes;
-using JetBrains.Annotations;
 using MrKWatkins.Cards.Collections;
 
 namespace MrKWatkins.Cards.Benchmarks.Collections;
@@ -19,9 +19,17 @@ public class CombinationsBenchmark
     }
 
     [Benchmark]
-    public void Iterative()
+    public void Iterative_Stack()
     {
-        foreach (var _ in fullDeck.Combinations(5))
+        foreach (var _ in Iterative_Stack(fullDeck, 5))
+        {
+        }
+    }
+    
+    [Benchmark]
+    public void Iterative_StackArrays()
+    {
+        foreach (var _ in Iterative_StackArrays(fullDeck, 5))
         {
         }
     }
@@ -40,6 +48,78 @@ public class CombinationsBenchmark
             foreach (var result in Recursive(source, combinationSize, currentCombination.Add(source[f]), f + 1))
             {
                 yield return result;
+            }
+        }
+    }
+
+    [Pure]
+    private static IEnumerable<IReadOnlyCardSet> Iterative_Stack(IReadOnlyList<Card> source, int combinationSize)
+        => Iterative_Stack(source.Select(c => c.BitIndex).ToList(), combinationSize);
+
+    [Pure]
+    private static IEnumerable<IReadOnlyCardSet> Iterative_Stack(IReadOnlyList<ulong> source, int combinationSize)
+    {
+        var combination = 0UL;
+        var stack = new Stack<int>(combinationSize);
+        stack.Push(0);
+ 
+        while (stack.Count > 0)
+        {
+            var toAddIndex = stack.Pop();
+            if (toAddIndex > 0)
+            {
+                combination = BitIndexOperations.Except(combination, source[toAddIndex - 1]);
+            }
+            var size = stack.Count;
+
+            while (toAddIndex < source.Count)
+            {
+                var toAdd = source[toAddIndex++];
+                combination = BitIndexOperations.Union(combination, toAdd);
+                stack.Push(toAddIndex);
+                size++;
+ 
+                if (size == combinationSize) 
+                {
+                    yield return new ImmutableCardSet(combination);
+                    break;
+                }
+            }
+        }
+    }
+    
+    [Pure]
+    private static IEnumerable<IReadOnlyCardSet> Iterative_StackArrays(IReadOnlyList<Card> source, int combinationSize)
+        => Iterative_StackArrays(source.Select(c => c.BitIndex).ToList(), combinationSize);
+
+    [Pure]
+    private static IEnumerable<IReadOnlyCardSet> Iterative_StackArrays(IReadOnlyList<ulong> source, int combinationSize)
+    {
+        var indexStack = new int[combinationSize];
+        var previousStack = new ulong[combinationSize];
+        var stackCount = 1;
+ 
+        while (stackCount > 0)
+        {
+            stackCount--;
+            var toAddIndex = indexStack[stackCount];
+            var combination = previousStack[stackCount];
+
+            while (toAddIndex < source.Count)
+            {
+                var toAdd = source[toAddIndex++];
+                
+                indexStack[stackCount] = toAddIndex;
+                previousStack[stackCount] = combination;
+                stackCount++;
+                
+                combination = BitIndexOperations.Union(combination, toAdd);
+ 
+                if (stackCount == combinationSize) 
+                {
+                    yield return new ImmutableCardSet(combination);
+                    break;
+                }
             }
         }
     }

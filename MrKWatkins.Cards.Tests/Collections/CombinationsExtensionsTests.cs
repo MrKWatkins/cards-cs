@@ -24,4 +24,15 @@ public sealed class CombinationsExtensionsTests
         var unique = combinations.ToHashSet();
         unique.Should().HaveCount(2598960);
     }
+    
+    [Test]
+    public void Combinations2()
+    {
+        var combinations = Card.FullDeck().Combinations2(5).ToList();
+        combinations.Should().HaveCount(2598960);
+        combinations.Should().OnlyContain(c => c.Count == 5);
+
+        var unique = combinations.ToHashSet();
+        unique.Should().HaveCount(2598960);
+    }
 }
