@@ -27,9 +27,17 @@ public class CombinationsBenchmark
     }
     
     [Benchmark]
-    public void Iterative_StackArrays()
+    public void Iterative_ArrayForStack()
     {
-        foreach (var _ in Iterative_StackArrays(fullDeck, 5))
+        foreach (var _ in Iterative_ArrayForStack(fullDeck, 5))
+        {
+        }
+    }
+    
+    [Benchmark]
+    public void Iterative_ArrayForStackAndPrevious()
+    {
+        foreach (var _ in Iterative_ArrayForStackAndPrevious(fullDeck, 5))
         {
         }
     }
@@ -89,11 +97,47 @@ public class CombinationsBenchmark
     }
     
     [Pure]
-    private static IEnumerable<IReadOnlyCardSet> Iterative_StackArrays(IReadOnlyList<Card> source, int combinationSize)
-        => Iterative_StackArrays(source.Select(c => c.BitIndex).ToList(), combinationSize);
+    private static IEnumerable<IReadOnlyCardSet> Iterative_ArrayForStack(IReadOnlyList<Card> source, int combinationSize)
+        => Iterative_ArrayForStack(source.Select(c => c.BitIndex).ToList(), combinationSize);
 
     [Pure]
-    private static IEnumerable<IReadOnlyCardSet> Iterative_StackArrays(IReadOnlyList<ulong> source, int combinationSize)
+    private static IEnumerable<IReadOnlyCardSet> Iterative_ArrayForStack(IReadOnlyList<ulong> source, int combinationSize)
+    {
+        var combination = 0UL;
+        var indexStack = new int[combinationSize];
+        var stackCount = 1;
+ 
+        while (stackCount > 0)
+        {
+            stackCount--;
+            var toAddIndex = indexStack[stackCount];
+            if (toAddIndex > 0)
+            {
+                combination = BitIndexOperations.Except(combination, source[toAddIndex - 1]);
+            }
+
+            while (toAddIndex < source.Count)
+            {
+                var toAdd = source[toAddIndex++];
+                combination = BitIndexOperations.Union(combination, toAdd);
+                indexStack[stackCount] = toAddIndex;
+                stackCount++;
+ 
+                if (stackCount == combinationSize) 
+                {
+                    yield return new ImmutableCardSet(combination);
+                    break;
+                }
+            }
+        }
+    }
+    
+    [Pure]
+    private static IEnumerable<IReadOnlyCardSet> Iterative_ArrayForStackAndPrevious(IReadOnlyList<Card> source, int combinationSize)
+        => Iterative_ArrayForStackAndPrevious(source.Select(c => c.BitIndex).ToList(), combinationSize);
+
+    [Pure]
+    private static IEnumerable<IReadOnlyCardSet> Iterative_ArrayForStackAndPrevious(IReadOnlyList<ulong> source, int combinationSize)
     {
         var indexStack = new int[combinationSize];
         var previousStack = new ulong[combinationSize];

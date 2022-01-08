@@ -48,7 +48,7 @@ public readonly struct ImmutableCardSet : IImmutableSet<Card>, IReadOnlyCardSet
 
     public IImmutableSet<Card> Remove(Card card) => new ImmutableCardSet(BitIndexOperations.Except(bitIndices, card.BitIndex));
 
-    public IEnumerator<Card> GetEnumerator() => new BitIndexEnumerator(bitIndices);
+    public IEnumerator<Card> GetEnumerator() => new CardEnumerator(bitIndices);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

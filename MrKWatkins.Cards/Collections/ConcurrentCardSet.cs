@@ -51,5 +51,5 @@ public sealed class ConcurrentCardSet : MutableCardSet
         return result;
     }
 
-    public override IEnumerator<Card> GetEnumerator() => new BitIndexEnumerator(BitIndices);
+    public override IEnumerator<Card> GetEnumerator() => new CardEnumerator(BitIndices);
 }

@@ -2,14 +2,14 @@ using System.Collections;
 
 namespace MrKWatkins.Cards.Collections;
 
-internal struct BitIndexEnumerator : IEnumerator<Card>
+internal struct CardEnumerator : IEnumerator<Card>
 {
     private const ulong NotStarted = ulong.MaxValue;
     private readonly ulong startBitIndices;
     private ulong bitIndices;
     private Card current;
 
-    internal BitIndexEnumerator(ulong bitIndices)
+    internal CardEnumerator(ulong bitIndices)
     {
         startBitIndices = bitIndices;
         this.bitIndices = NotStarted;
