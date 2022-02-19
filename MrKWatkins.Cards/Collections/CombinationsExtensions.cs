@@ -57,26 +57,29 @@ public static class CombinationsExtensions
     [Pure]
     private static IEnumerable<IReadOnlyCardSet> Combinations(IReadOnlyList<ulong> source, int combinationSize)
     {
-        // Two stacks, one for the next index to process and one for the previous combination, i.e. the combination before that index was added.
-        var indexStack = new int[combinationSize];
-        var previousStack = new ulong[combinationSize];
+        // Two arrays and position to use as a stack of the current combination and the next index to start with for that combination.
+        var combinationStack = new ulong[combinationSize];
+        var startSourceIndexStack = new int[combinationSize];
         var stackCount = 1;
 
+        // Whilst the stack isn't empty we have more cards to process.
         while (stackCount > 0)
         {
-            // Pop the stacks; get the next index to process and the previous combination.
+            // Pop the stacks to get the combination and next index to process.
             stackCount--;
-            var index = indexStack[stackCount];
-            var combination = previousStack[stackCount];
+            var combination = combinationStack[stackCount];
+            var startSourceIndex = startSourceIndexStack[stackCount];
 
-            // Loop through the next items in source, adding them to the combination.
-            while (index < source.Count)
+            // Loop over the remaining cards to add them to the combination.
+            while (startSourceIndex < source.Count)
             {
-                var toAdd = source[index++];
+                // Add the next card.
+                var toAdd = source[startSourceIndex];
+                startSourceIndex++;
 
                 // Push the next index and the combination before adding it onto the stacks.
-                indexStack[stackCount] = index;
-                previousStack[stackCount] = combination;
+                startSourceIndexStack[stackCount] = startSourceIndex;
+                combinationStack[stackCount] = combination;
                 stackCount++;
 
                 // Update the combination.
