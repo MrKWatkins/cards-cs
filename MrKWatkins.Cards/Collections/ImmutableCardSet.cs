@@ -37,15 +37,27 @@ public readonly struct ImmutableCardSet : IImmutableSet<Card>, IReadOnlyCardSet
 
     public override string ToString() => CardFormat.Default.Format(this);
 
-    public IImmutableSet<Card> Add(Card card) => new ImmutableCardSet(BitIndexOperations.Union(bitIndices, card.BitIndex));
+    IImmutableSet<Card> IImmutableSet<Card>.Add(Card card) => Add(card);
+    
+    [Pure]
+    public ImmutableCardSet Add(Card card) => new (BitIndexOperations.Union(bitIndices, card.BitIndex));
 
-    public IImmutableSet<Card> Clear() => Empty;
+    IImmutableSet<Card> IImmutableSet<Card>.Clear() => Clear();
+    
+#pragma warning disable CA1822
+    // ReSharper disable once MemberCanBeMadeStatic.Global
+    [Pure]
+    public ImmutableCardSet Clear() => Empty;
+#pragma warning restore CA1822
     
     public bool Contains(Card card) => BitIndexOperations.Contains(bitIndices, card.BitIndex);
 
     public int Count => bitIndices.PopCount();
 
-    public IImmutableSet<Card> Remove(Card card) => new ImmutableCardSet(BitIndexOperations.Except(bitIndices, card.BitIndex));
+    IImmutableSet<Card> IImmutableSet<Card>.Remove(Card card) => Remove(card);
+    
+    [Pure]
+    public ImmutableCardSet Remove(Card card) => new (BitIndexOperations.Except(bitIndices, card.BitIndex));
 
     public IEnumerator<Card> GetEnumerator() => new CardEnumerator(bitIndices);
 
@@ -94,28 +106,37 @@ public readonly struct ImmutableCardSet : IImmutableSet<Card>, IReadOnlyCardSet
     public bool SetEquals(IEnumerable<Card> other) => SetEquals(BitIndexOperations.ToBitIndices(other));
 
     [Pure]
-    private IImmutableSet<Card> Except(ulong other) => new ImmutableCardSet(BitIndexOperations.Except(bitIndices, other));
+    private ImmutableCardSet Except(ulong other) => new (BitIndexOperations.Except(bitIndices, other));
 
     [Pure]
-    public IImmutableSet<Card> Except(IReadOnlyCardSet other) => Except(other.BitIndices);
+    public ImmutableCardSet Except(IReadOnlyCardSet other) => Except(other.BitIndices);
 
+    IImmutableSet<Card> IImmutableSet<Card>.Except(IEnumerable<Card> other) => Except(other);
+    
+    [Pure]
     public IImmutableSet<Card> Except(IEnumerable<Card> other) => Except(BitIndexOperations.ToBitIndices(other));
 
     [Pure]
-    private IImmutableSet<Card> Intersect(ulong other) => new ImmutableCardSet(BitIndexOperations.Intersect(bitIndices, other));
+    private ImmutableCardSet Intersect(ulong other) => new (BitIndexOperations.Intersect(bitIndices, other));
 
     [Pure]
-    public IImmutableSet<Card> Intersect(IReadOnlyCardSet other) => Intersect(other.BitIndices);
+    public ImmutableCardSet Intersect(IReadOnlyCardSet other) => Intersect(other.BitIndices);
 
-    public IImmutableSet<Card> Intersect(IEnumerable<Card> other) => Intersect(BitIndexOperations.ToBitIndices(other));
+    IImmutableSet<Card> IImmutableSet<Card>.Intersect(IEnumerable<Card> other) => Intersect(other);
+    
+    [Pure]
+    public ImmutableCardSet Intersect(IEnumerable<Card> other) => Intersect(BitIndexOperations.ToBitIndices(other));
 
     [Pure]
-    private IImmutableSet<Card> SymmetricExcept(ulong other) => new ImmutableCardSet(BitIndexOperations.SymmetricExcept(bitIndices, other));
+    private ImmutableCardSet SymmetricExcept(ulong other) => new (BitIndexOperations.SymmetricExcept(bitIndices, other));
 
     [Pure]
-    public IImmutableSet<Card> SymmetricExcept(IReadOnlyCardSet other) => SymmetricExcept(other.BitIndices);
+    public ImmutableCardSet SymmetricExcept(IReadOnlyCardSet other) => SymmetricExcept(other.BitIndices);
 
-    public IImmutableSet<Card> SymmetricExcept(IEnumerable<Card> other) => SymmetricExcept(BitIndexOperations.ToBitIndices(other));
+    IImmutableSet<Card> IImmutableSet<Card>.SymmetricExcept(IEnumerable<Card> other) => SymmetricExcept(other);
+    
+    [Pure]
+    public ImmutableCardSet SymmetricExcept(IEnumerable<Card> other) => SymmetricExcept(BitIndexOperations.ToBitIndices(other));
 
     public bool TryGetValue(Card equalValue, out Card actualValue)
     {
@@ -124,10 +145,13 @@ public readonly struct ImmutableCardSet : IImmutableSet<Card>, IReadOnlyCardSet
     }
     
     [Pure]
-    private IImmutableSet<Card> Union(ulong other) => new ImmutableCardSet(BitIndexOperations.Union(bitIndices, other));
+    private ImmutableCardSet Union(ulong other) => new (BitIndexOperations.Union(bitIndices, other));
 
     [Pure]
-    public IImmutableSet<Card> Union(IReadOnlyCardSet other) => Union(other.BitIndices);
+    public ImmutableCardSet Union(IReadOnlyCardSet other) => Union(other.BitIndices);
 
-    public IImmutableSet<Card> Union(IEnumerable<Card> other) => Union(BitIndexOperations.ToBitIndices(other));
+    IImmutableSet<Card> IImmutableSet<Card>.Union(IEnumerable<Card> other) => Union(other);
+    
+    [Pure]
+    public ImmutableCardSet Union(IEnumerable<Card> other) => Union(BitIndexOperations.ToBitIndices(other));
 }
