@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using System.Numerics;
 
 namespace MrKWatkins.Cards.Poker;
@@ -14,8 +15,10 @@ namespace MrKWatkins.Cards.Poker;
 /// 
 /// Bit 31 is not used so all numbers will be positive. Better hands are represented by higher numbers.
 /// </remarks>
+// TODO: Tests!
 public sealed class PokerHand : IComparable<PokerHand>, IEquatable<PokerHand>
 {
+    private const short AceHighRankMask = 1 << 13;
     private const int HandTypeMask = 0x78000000;        // 1s at bits 27 -> 30.
     private const int PrimaryRankMask = 0x7FFE000;      // 1s at bits 13 -> 26. Should really be PrimaryRankMaskMask...
     private const int SecondaryRankMask = 0x1FFF;       // 1s at bits 0 -> 12.
@@ -35,15 +38,10 @@ public sealed class PokerHand : IComparable<PokerHand>, IEquatable<PokerHand>
 
     public IEnumerable<Rank> SecondaryRanks => RankMaskToRanks((hand & SecondaryRankMask) << 1).Reverse(); // Shift left 1 as we don't store a low ace bit.
 
-    public int CompareTo(PokerHand? other)
-    {
-        if (other is null)
-        {
-            return +1;
-        }
+    [Pure]
+    public static int Compare(PokerHand? x, PokerHand? y) => (x?.hand ?? 0).CompareTo(y?.hand ?? 0);
 
-        return hand.CompareTo(other.hand);
-    }
+    public int CompareTo(PokerHand? other) => hand.CompareTo(other?.hand ?? 0);
 
     public bool Equals(PokerHand? other)
     {
@@ -65,7 +63,16 @@ public sealed class PokerHand : IComparable<PokerHand>, IEquatable<PokerHand>
     public static bool operator ==(PokerHand? left, PokerHand? right) => Equals(left, right);
 
     public static bool operator !=(PokerHand? left, PokerHand? right) => !Equals(left, right);
+
+    public static bool operator <(PokerHand? left, PokerHand? right) => Compare(left, right) < 0;
     
+    public static bool operator <=(PokerHand? left, PokerHand? right) => Compare(left, right) <= 0;
+
+    public static bool operator >(PokerHand? left, PokerHand? right) => Compare(left, right) > 0;
+    
+    public static bool operator >=(PokerHand? left, PokerHand? right) => Compare(left, right) >= 0;
+    
+    [Pure]
     private static IEnumerable<Rank> RankMaskToRanks(int rankMask)
     {
         while (rankMask != 0)
@@ -77,9 +84,10 @@ public sealed class PokerHand : IComparable<PokerHand>, IEquatable<PokerHand>
         }
     }
 
+    [Pure]
     private static Rank RankMaskToRank(short rankMask)
     {
-        if (rankMask == (short) PokerEvaluator.AceHighRankMask)
+        if (rankMask == AceHighRankMask)
         {
             return Rank.Ace;
         }
@@ -87,5 +95,6 @@ public sealed class PokerHand : IComparable<PokerHand>, IEquatable<PokerHand>
         return (Rank) RankMaskToRankNumber(rankMask);
     }
 
+    [Pure]
     private static int RankMaskToRankNumber(int rankMask) => BitOperations.TrailingZeroCount(rankMask);
 }

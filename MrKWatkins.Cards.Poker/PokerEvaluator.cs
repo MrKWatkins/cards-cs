@@ -1,14 +1,14 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics.X86;
 using MrKWatkins.Cards.Collections;
 
 namespace MrKWatkins.Cards.Poker;
 
+[JetBrains.Annotations.PublicAPI]
 public sealed class PokerEvaluator
 {
-    internal const ulong AceHighRankMask = 1UL << 13;
-    private const ulong KingRankMask = 1UL << 12;
-    private const ulong TenRankMask = 1UL << 9;
+    private const ulong AceHighRankMask = 1UL << 13;
     private const ulong Bits0To15 = 0x000000000000FFFF;
     private const ulong Bits0To31 = 0x00000000FFFFFFFF;
     private const ulong Bits16To31 = 0x00000000FFFF0000;
@@ -24,27 +24,49 @@ public sealed class PokerEvaluator
             throw new ArgumentException("Value must have 7 cards.", nameof(hand));
         }
 
-        return hand.Combinations(5).Max(EvaluateFiveCardHandInternal)!;
+        PokerHand? result = null;
+        foreach (var fiveCardHand in hand.Combinations(5))
+        {
+            var handMask = 0UL;
+            // ReSharper disable once LoopCanBeConvertedToQuery - faster to not use LINQ.
+            foreach (var card in fiveCardHand)
+            {
+                handMask |= card.AceHighBitMask;
+            }
+
+            var fiveCardResult = EvaluateFiveCardHand(handMask);
+            if (result == null || result < fiveCardResult)
+            {
+                result = fiveCardResult;
+            }
+        }
+        return result!;
     }
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    public PokerHand EvaluateFiveCardHand(IReadOnlyCollection<Card> hand)
+    public PokerHand EvaluateFiveCardHand([JetBrains.Annotations.InstantHandle] IEnumerable<Card> hand)
     {
-        if (hand.Count != 5)
+        var handMask = 0UL;
+        var count = 0;
+        foreach (var card in hand)
+        {
+            handMask |= card.AceHighBitMask;
+            count++;
+        }
+
+        if (count != 5)
         {
             throw new ArgumentException("Value must have 5 cards.", nameof(hand));
         }
 
-        return EvaluateFiveCardHandInternal(hand);
+        return EvaluateFiveCardHand(handMask);
     }
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private static PokerHand EvaluateFiveCardHandInternal(IReadOnlyCollection<Card> hand)
+    private static PokerHand EvaluateFiveCardHand(ulong handMask)
     {
-        var handMask = hand.Aggregate(0UL, (current, card) => current | card.BitMask);
-
         // If we reduce with OR then the count is the number of different ranks we have.
         // Flush/straight/high card -> 5x1 -> count = 5
         // Four of a kind -> 1x4, 1x1 -> count = 2
@@ -97,7 +119,7 @@ public sealed class PokerEvaluator
         // will extract it.
         var highCardMask = orReduction ^ andReduced;
 
-        return new PokerHand(PokerHandType.FourOfAKind, MoveLowAceToHigh(andReduced), MoveLowAceToHigh(highCardMask));
+        return new PokerHand(PokerHandType.FourOfAKind, andReduced, highCardMask);
     }
 
     [Pure]
@@ -110,7 +132,7 @@ public sealed class PokerEvaluator
 
         var pairMask = orReduction ^ threeMask;
 
-        return new PokerHand(PokerHandType.FullHouse, MoveLowAceToHigh(threeMask), MoveLowAceToHigh(pairMask));
+        return new PokerHand(PokerHandType.FullHouse, threeMask, pairMask);
     }
 
     [Pure]
@@ -122,7 +144,7 @@ public sealed class PokerEvaluator
 
         var pairRankMask = orReduction ^ hardCardsRankMask;
 
-        return new PokerHand(PokerHandType.Pair, MoveLowAceToHigh(pairRankMask), MoveLowAceToHigh(hardCardsRankMask));
+        return new PokerHand(PokerHandType.Pair, pairRankMask, hardCardsRankMask);
     }
 
     [Pure]
@@ -158,7 +180,9 @@ public sealed class PokerEvaluator
         if (threeMask == 0)
         {
             // Must be SDC or SHC.
-            var cAndSRankMask = Bits0To31 & ((handMask << 16) | (handMask >> 48));
+            var cAndSRankMask = Bmi2.X64.IsSupported 
+                ? Bmi2.X64.ParallelBitExtract(handMask, Bits0To15 | Bits48To63)
+                : Bits0To31 & ((handMask << 16) | (handMask >> 48));
 
             threeMask = cAndSRankMask & sdAndHcRankMasks;
         }
@@ -167,7 +191,7 @@ public sealed class PokerEvaluator
 
         var highCardsRankMask = orReduction ^ threeRankMask;
 
-        return new PokerHand(PokerHandType.ThreeOfAKind, MoveLowAceToHigh(threeRankMask), MoveLowAceToHigh(highCardsRankMask));
+        return new PokerHand(PokerHandType.ThreeOfAKind, threeRankMask, highCardsRankMask);
     }
 
     [Pure]
@@ -176,37 +200,27 @@ public sealed class PokerEvaluator
     {
         var pairMask = orReduction ^ xorReduction;
 
-        return new PokerHand(PokerHandType.TwoPair, MoveLowAceToHigh(pairMask), MoveLowAceToHigh(xorReduction));
+        return new PokerHand(PokerHandType.TwoPair, pairMask, xorReduction);
     }
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static PokerHand FlushStraightOrHighCard(ulong handMask, ulong orReduction)
     {
-        var rankMask = orReduction;
-        var hasAce = (orReduction & 1UL) != 0;
-
-        if (hasAce)
+        // As we are using aces high we need a special case for 5 -> A straight.
+        if (orReduction == 0b10000000011110)
         {
-            // Add an extra bit to represent the ace as high - allows us to do the same run test
-            // for AK as we would for 2A.
-            rankMask |= AceHighRankMask;
+            return new PokerHand(IsSingleSuit(handMask) ? PokerHandType.StraightFlush : PokerHandType.Straight, 0b00000000011111);
         }
-
+        
         // If we AND the rank mask with itself shifted right one then we will get a 1 bit everywhere
         // there is a run of two cards, with the bit being on the lower of the two cards.
-        var runOfTwoRankMask = rankMask & (rankMask >> 1);
+        var runOfTwoRankMask = orReduction & (orReduction >> 1);
 
-        // For a run of five we must have four runs of two. These can only be consecutive *except* when
-        // we have an ace because we've added the extra high bit for an ace. We can distinguish this 
-        // case easily because there will be a bit in both the king and low ace positions.
-        var twoRunRankMaskCount = runOfTwoRankMask.PopCount();
-        if (twoRunRankMaskCount == 4 &&
-            (!hasAce ||
-             (runOfTwoRankMask & 1UL) == 0 ||
-             (runOfTwoRankMask & KingRankMask) == 0))
+        // For a run of five we must have four runs of two. These can only be consecutive.
+        if (runOfTwoRankMask.PopCount() == 4)
         {
-            return Straight(handMask, runOfTwoRankMask);
+            return Straight(handMask, orReduction);
         }
 
         return FlushOrHighCard(handMask, orReduction);
@@ -218,40 +232,21 @@ public sealed class PokerEvaluator
     {
         var type = IsSingleSuit(handMask) ? PokerHandType.Flush : PokerHandType.HighCard;
 
-        return new PokerHand(type, MoveLowAceToHigh(orReduction));
+        return new PokerHand(type, orReduction);
     }
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private static PokerHand Straight(ulong handMask, ulong twoRunRankMask)
-    {
-        // twoRunRankMask & -twoRunRankMask ?
-        var rankMask = twoRunRankMask ^ (twoRunRankMask & (twoRunRankMask - 1));
-
-        var isSingleSuit = IsSingleSuit(handMask);
-
-        // We can shift the low rank left 4 to get the high rank *except* for a 10 as that would
-        // put it in the ace high position.
-        if (rankMask == TenRankMask)
+    private static PokerHand Straight(ulong handMask, ulong orReduction)
+    {        
+        if (IsSingleSuit(handMask))
         {
-            rankMask = AceHighRankMask;
-        }
-        else
-        {
-            rankMask <<= 4;
+            var type = (orReduction & AceHighRankMask) == AceHighRankMask ? PokerHandType.RoyalFlush : PokerHandType.StraightFlush;
+            
+            return new PokerHand(type, orReduction);
         }
 
-        if (isSingleSuit)
-        {
-            if (rankMask == AceHighRankMask)
-            {
-                return new PokerHand(PokerHandType.RoyalFlush, AceHighRankMask);
-            }
-
-            return new PokerHand(PokerHandType.StraightFlush, rankMask);
-        }
-
-        return new PokerHand(PokerHandType.Straight, rankMask);
+        return new PokerHand(PokerHandType.Straight, orReduction);
     }
 
     [Pure]
@@ -262,16 +257,5 @@ public sealed class PokerEvaluator
                (handMask & Bits16To31) == handMask ||
                (handMask & Bits32To47) == handMask ||
                (handMask & Bits48To63) == handMask;
-    }
-
-    [Pure]
-    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private static ulong MoveLowAceToHigh(ulong handMask)
-    {
-        var ace = handMask & 1;
-        var aceHigh = ace << 13;
-        var withoutAce = handMask & 0b1111111111111110;
-
-        return withoutAce | aceHigh;
     }
 }

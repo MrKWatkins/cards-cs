@@ -9,15 +9,15 @@ namespace MrKWatkins.Cards.Poker.Tests;
 public sealed class PokerEvaluatorTests
 {
     // Hand type comes first so hands are organised by type in test runners.
-    [TestCase(PokerHandType.RoyalFlush, "AS KS QS JS 10S", new[] { Rank.Ace }, null)]
+    [TestCase(PokerHandType.RoyalFlush, "AS KS QS JS 10S", new[] { Rank.Ace, Rank.King, Rank.Queen, Rank.Jack, Rank.Ten }, null)]
 
     [TestCase(PokerHandType.FourOfAKind, "AS AH AD AC KH", new[] { Rank.Ace }, new[] { Rank.King })]
     [TestCase(PokerHandType.FourOfAKind, "4S 4H 4D 4C 7H", new[] { Rank.Four }, new[] { Rank.Seven })]
 
-    [TestCase(PokerHandType.StraightFlush, "KS QS JS 10S 9S", new[] { Rank.King }, null)]
-    [TestCase(PokerHandType.StraightFlush, "QH JH 10H 9H 8H", new[] { Rank.Queen }, null)]
-    [TestCase(PokerHandType.StraightFlush, "9D 8D 7D 6D 5D", new[] { Rank.Nine }, null)]
-    [TestCase(PokerHandType.StraightFlush, "5C 4C 3C 2C AC", new[] { Rank.Five }, null)]
+    [TestCase(PokerHandType.StraightFlush, "KS QS JS 10S 9S", new[] { Rank.King, Rank.Queen, Rank.Jack, Rank.Ten, Rank.Nine }, null)]
+    [TestCase(PokerHandType.StraightFlush, "QH JH 10H 9H 8H", new[] { Rank.Queen, Rank.Jack, Rank.Ten, Rank.Nine, Rank.Eight }, null)]
+    [TestCase(PokerHandType.StraightFlush, "9D 8D 7D 6D 5D", new[] { Rank.Nine, Rank.Eight, Rank.Seven, Rank.Six, Rank.Five }, null)]
+    [TestCase(PokerHandType.StraightFlush, "5C 4C 3C 2C AC", new[] { Rank.Five, Rank.Four, Rank.Three, Rank.Two, Rank.Ace }, null)]
 
     [TestCase(PokerHandType.FullHouse, "4S 4H 4D 8S 8H", new[] { Rank.Four }, new[] { Rank.Eight })] // 3 = SHD
     [TestCase(PokerHandType.FullHouse, "KS KH KC AD AH", new[] { Rank.King }, new[] { Rank.Ace })] // 3 = SHC
@@ -29,10 +29,10 @@ public sealed class PokerEvaluatorTests
     [TestCase(PokerHandType.Flush, "9D 8D 7D 5D 3D", new[] { Rank.Nine, Rank.Eight, Rank.Seven, Rank.Five, Rank.Three }, null)]
     [TestCase(PokerHandType.Flush, "8C 7C 4C 3C 2C", new[] { Rank.Eight, Rank.Seven, Rank.Four, Rank.Three, Rank.Two }, null)]
 
-    [TestCase(PokerHandType.Straight, "KS QS JS 10H 9S", new[] { Rank.King }, null)]
-    [TestCase(PokerHandType.Straight, "QH JH 10H 9D 8H", new[] { Rank.Queen }, null)]
-    [TestCase(PokerHandType.Straight, "9D 8D 7D 6C 5D", new[] { Rank.Nine }, null)]
-    [TestCase(PokerHandType.Straight, "5C 4C 3C 2S AC", new[] { Rank.Five }, null)]
+    [TestCase(PokerHandType.Straight, "KS QS JS 10H 9S", new[] { Rank.King, Rank.Queen, Rank.Jack, Rank.Ten, Rank.Nine }, null)]
+    [TestCase(PokerHandType.Straight, "QH JH 10H 9D 8H", new[] { Rank.Queen, Rank.Jack, Rank.Ten, Rank.Nine, Rank.Eight }, null)]
+    [TestCase(PokerHandType.Straight, "9D 8D 7D 6C 5D", new[] { Rank.Nine, Rank.Eight, Rank.Seven, Rank.Six, Rank.Five }, null)]
+    [TestCase(PokerHandType.Straight, "5C 4C 3C 2S AC", new[] { Rank.Five, Rank.Four, Rank.Three, Rank.Two, Rank.Ace }, null)]
 
     [TestCase(PokerHandType.ThreeOfAKind, "4S 4H 4D 8S 6H", new[] { Rank.Four }, new[] { Rank.Eight, Rank.Six })] // SHD
     [TestCase(PokerHandType.ThreeOfAKind, "10S 10H 10C AC 9D", new[] { Rank.Ten }, new[] { Rank.Ace, Rank.Nine })] // SHC

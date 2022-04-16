@@ -39,7 +39,19 @@ public readonly struct Card : IEquatable<Card>
     /// Gets a ulong of the card encoded with a single set bit. Divide the 64 bits of a ulong into 4, 16 for each suit.
     /// The rank is then encoded as the set bit from 0 -> 12 in the relevant 16 bits.
     /// </summary>
-    internal ulong BitMask => 1UL << (int) Rank << ((int) Suit * 16);
+    internal ulong BitMask => 1UL << (int) Rank << ((int) Suit << 4); // x << 4 == x * 16.
+
+    internal ulong AceHighBitMask
+    {
+        get
+        {
+            var rank = 1UL << (int)Rank;
+            var rankWithAceCopiedHigh = rank | (rank << 13);
+            var aceHighRank = rankWithAceCopiedHigh & 0b11111111111110;
+        
+            return aceHighRank << ((int)Suit << 4);
+        }
+    }
 
     [Pure]
     internal static Card FromBitMask(ulong bitMask) => 

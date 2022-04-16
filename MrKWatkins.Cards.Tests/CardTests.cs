@@ -54,6 +54,22 @@ public sealed class CardTests
             }
         }
     }
+    
+    [Test]
+    public void AceHighBitMask()
+    {
+        for (var suit = 0; suit < 4; suit++)
+        {
+            for (var rank = 0; rank < 13; rank++)
+            {
+                var card = new Card((Rank) rank, (Suit) suit);
+                var expected = rank == 0 
+                    ? 1UL << 13 << (suit * 16) 
+                    : 1UL << rank << (suit * 16);
+                card.AceHighBitMask.Should().Be(expected);
+            }
+        }
+    }
 
     [Test]
     public void FromBitMask() => Card.FullDeck.Select(c => Card.FromBitMask(c.BitMask)).Should().BeEquivalentTo(Card.FullDeck);
