@@ -6,6 +6,7 @@ using MrKWatkins.Cards.Text;
 
 namespace MrKWatkins.Cards;
 
+// TODO: ISpanFormattable, IFormattable
 public readonly struct Card : IEquatable<Card>
 {
     public Card(Rank rank, Suit suit)
