@@ -5,16 +5,17 @@ using MrKWatkins.Cards.Poker;
 namespace MrKWatkins.Cards.Benchmarks.Poker;
 
 [MemoryDiagnoser]
-public class EvaluateAllBenchmark
+public class EvaluateFiveCardHandBenchmark
 {
     private readonly IReadOnlyList<IReadOnlyCardSet> allFiveCardHands = Card.FullDeck.Combinations(5).ToList();
+    private readonly PokerEvaluator evaluator = new ();
 
     [Benchmark(Baseline = true)]
-    public void Evaluate()
+    public void EvaluateFiveCardHand()
     {
         foreach (var hand in allFiveCardHands)
         {
-            PokerEvaluation.Evaluate(hand);
+            var _ = evaluator.EvaluateFiveCardHand(hand);
         }
     }
 }

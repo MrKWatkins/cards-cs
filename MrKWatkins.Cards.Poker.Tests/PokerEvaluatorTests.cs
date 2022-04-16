@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace MrKWatkins.Cards.Poker.Tests;
 
 [TestFixture]
-public sealed class PokerEvaluationTests
+public sealed class PokerEvaluatorTests
 {
     // Hand type comes first so hands are organised by type in test runners.
     [TestCase(PokerHandType.RoyalFlush, "AS KS QS JS 10S", new[] { Rank.Ace }, null)]
@@ -87,10 +87,10 @@ public sealed class PokerEvaluationTests
     [TestCase(PokerHandType.HighCard, "AS KS QS 10C 9C", new[] { Rank.Ace, Rank.King, Rank.Queen, Rank.Ten, Rank.Nine }, null)]
     [TestCase(PokerHandType.HighCard, "AS KS QS 3C 2C", new[] { Rank.Ace, Rank.King, Rank.Queen, Rank.Three, Rank.Two }, null)]
     [TestCase(PokerHandType.HighCard, "KS QS 6H 3C 2C", new[] { Rank.King, Rank.Queen, Rank.Six, Rank.Three, Rank.Two }, null)]
-    public void Evaluate(PokerHandType expectedHandType, string hand, Rank[] expectedPrimaryRanks, Rank[]? expectedSecondaryRanks)
+    public void EvaluateFiveCardHand(PokerHandType expectedHandType, string hand, Rank[] expectedPrimaryRanks, Rank[]? expectedSecondaryRanks)
     {
         var cardSet = new CardSet(CardFormat.Default.ParseMultipleOrThrow(hand));
-        var pokerHand = PokerEvaluation.Evaluate(cardSet);
+        var pokerHand = new PokerEvaluator().EvaluateFiveCardHand(cardSet);
 
         pokerHand.Type.Should().Be(expectedHandType);
         pokerHand.PrimaryRanks.Should().BeEquivalentTo(expectedPrimaryRanks);
@@ -98,17 +98,16 @@ public sealed class PokerEvaluationTests
     }
 
     [Test]
-    public void Evaluate_AllHands()
+    public void EvaluateFiveCardHand_AllHands()
     {
         var allFiveCardHands = Card.FullDeck.Combinations(5);
 
-        var handsByType = allFiveCardHands
-            .Select(PokerEvaluation.Evaluate)
-            .GroupBy(h => h.Type)
-            .ToDictionary(h => h.Key, h => h.Count());
+        var evaluator = new PokerEvaluator();
+        var handsByType = CountHandTypes(allFiveCardHands, evaluator.EvaluateFiveCardHand);
 
         var expected = new Dictionary<PokerHandType, int>
         {
+            { PokerHandType.FiveOfAKind, 0 },
             { PokerHandType.RoyalFlush, 4 },
             { PokerHandType.StraightFlush, 36 },
             { PokerHandType.FourOfAKind, 624 },
@@ -121,6 +120,48 @@ public sealed class PokerEvaluationTests
             { PokerHandType.HighCard, 1302540 }
         };
 
+        handsByType.Values.Sum().Should().Be(2598960);
         handsByType.Should().BeEquivalentTo(expected);
+    }
+    
+    [Test]
+    [Ignore("Takes several minutes to run.")]
+    public void EvaluateSevenCardHand_AllHands()
+    {
+        var allSevenCardHands = Card.FullDeck.Combinations(7);
+        
+        var evaluator = new PokerEvaluator();
+        var handsByType = CountHandTypes(allSevenCardHands, evaluator.EvaluateSevenCardHand);
+        
+        // http://people.math.sfu.ca/~alspach/comp20/
+        var expected = new Dictionary<PokerHandType, int>
+        {
+            { PokerHandType.FiveOfAKind, 0 },
+            { PokerHandType.RoyalFlush, 4324 },
+            { PokerHandType.StraightFlush, 37260 },
+            { PokerHandType.FourOfAKind, 224848 },
+            { PokerHandType.FullHouse, 3473184 },
+            { PokerHandType.Flush, 4047644 },
+            { PokerHandType.Straight, 6180020 },
+            { PokerHandType.ThreeOfAKind, 6461620 },
+            { PokerHandType.TwoPair, 31433400 },
+            { PokerHandType.Pair, 58627800 },
+            { PokerHandType.HighCard, 23294460 }
+        };
+
+        handsByType.Values.Sum().Should().Be(133784560);
+        handsByType.Should().BeEquivalentTo(expected);
+    }
+
+    [JetBrains.Annotations.MustUseReturnValue]
+    private static IReadOnlyDictionary<PokerHandType, int> CountHandTypes([JetBrains.Annotations.InstantHandle] IEnumerable<IReadOnlyCardSet> hands, Func<IReadOnlyCardSet, PokerHand> evaluator)
+    {
+        var results = new int[Enum.GetValues<PokerHandType>().Length];
+        foreach (var hand in hands.AsParallel().Select(evaluator))
+        {
+            Interlocked.Increment(ref results[(int)hand.Type]);
+        }
+
+        return results.Select((value, index) => (Type: (PokerHandType)index, Count: value)).ToDictionary(x => x.Type, x => x.Count);
     }
 }

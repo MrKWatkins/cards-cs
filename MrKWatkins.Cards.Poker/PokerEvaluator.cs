@@ -1,9 +1,10 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using MrKWatkins.Cards.Collections;
 
 namespace MrKWatkins.Cards.Poker;
 
-public static class PokerEvaluation
+public sealed class PokerEvaluator
 {
     internal const ulong AceHighRankMask = 1UL << 13;
     private const ulong KingRankMask = 1UL << 12;
@@ -14,20 +15,34 @@ public static class PokerEvaluation
     private const ulong Bits32To47 = 0x0000FFFF00000000;
     private const ulong Bits48To63 = 0xFFFF000000000000;
 
-    // Bits for suits:
-    //  * Spades    0 -> 15
-    //  * Hearts   16 -> 31
-    //  * Diamonds 32 -> 47
-    //  * Clubs    48 -> 63
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    public static PokerHand Evaluate(IReadOnlyCollection<Card> hand)
+    public PokerHand EvaluateSevenCardHand(IReadOnlyCollection<Card> hand)
+    {
+        if (hand.Count != 7)
+        {
+            throw new ArgumentException("Value must have 7 cards.", nameof(hand));
+        }
+
+        return hand.Combinations(5).Max(EvaluateFiveCardHandInternal)!;
+    }
+
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public PokerHand EvaluateFiveCardHand(IReadOnlyCollection<Card> hand)
     {
         if (hand.Count != 5)
         {
             throw new ArgumentException("Value must have 5 cards.", nameof(hand));
         }
 
+        return EvaluateFiveCardHandInternal(hand);
+    }
+
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static PokerHand EvaluateFiveCardHandInternal(IReadOnlyCollection<Card> hand)
+    {
         var handMask = hand.Aggregate(0UL, (current, card) => current | card.BitMask);
 
         // If we reduce with OR then the count is the number of different ranks we have.

@@ -79,7 +79,7 @@ public sealed class PokerHand : IComparable<PokerHand>, IEquatable<PokerHand>
 
     private static Rank RankMaskToRank(short rankMask)
     {
-        if (rankMask == (short) PokerEvaluation.AceHighRankMask)
+        if (rankMask == (short) PokerEvaluator.AceHighRankMask)
         {
             return Rank.Ace;
         }
