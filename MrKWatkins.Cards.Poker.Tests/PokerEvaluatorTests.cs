@@ -8,6 +8,15 @@ namespace MrKWatkins.Cards.Poker.Tests;
 [TestFixture]
 public sealed class PokerEvaluatorTests
 {
+    [TestCase("AS KS QS JS 10S 9S")]
+    [TestCase("AS KS QS JS")]
+    public void EvaluateFiveCardHand_ThrowsIfHandDoesNotHaveFiveCards(string hand)
+    {
+        var cardSet = new CardSet(CardFormat.Default.ParseMultipleOrThrow(hand));
+        var evaluator = new PokerEvaluator();
+        evaluator.Invoking(p => p.EvaluateFiveCardHand(cardSet)).Should().Throw<ArgumentException>();
+    }
+
     // Hand type comes first so hands are organised by type in test runners.
     [TestCase(PokerHandType.RoyalFlush, "AS KS QS JS 10S", new[] { Rank.Ace, Rank.King, Rank.Queen, Rank.Jack, Rank.Ten }, null)]
 
@@ -122,6 +131,32 @@ public sealed class PokerEvaluatorTests
 
         handsByType.Values.Sum().Should().Be(2598960);
         handsByType.Should().BeEquivalentTo(expected);
+    }
+    
+    [TestCase("AS KS QS JS 10S 9S 2C 3C")]
+    [TestCase("AS KS QS JS 2C 3C")]
+    public void EvaluateSevenCardHand_ThrowsIfHandDoesNotHaveFiveCards(string hand)
+    {
+        var cardSet = new CardSet(CardFormat.Default.ParseMultipleOrThrow(hand));
+        var evaluator = new PokerEvaluator();
+        evaluator.Invoking(p => p.EvaluateSevenCardHand(cardSet)).Should().Throw<ArgumentException>();
+    }
+    
+    // Taken from https://www.dummies.com/article/home-auto-hobbies/games/card-games/poker/playing-a-hand-of-seven-card-stud-poker-199748/.
+    [TestCase(PokerHandType.FullHouse, "AS AH 6D 4C 4H 2H AC", new[] { Rank.Ace }, new[] { Rank.Four })]
+    [TestCase(PokerHandType.Flush, "JD 4D 10D 9D KS 3H AD", new[] { Rank.Ace, Rank.Jack, Rank.Ten, Rank.Nine, Rank.Four }, null)]
+    [TestCase(PokerHandType.TwoPair, "9S 7S 8H 8C 6C 6H 9D", new[] { Rank.Nine,  Rank.Eight }, new[] { Rank.Seven })]
+    [TestCase(PokerHandType.FullHouse, "QC JS QS 2S QH JH 3D", new[] { Rank.Queen }, new[] { Rank.Jack })]
+    [TestCase(PokerHandType.ThreeOfAKind, "5S 5D 5H KH 8D 7H 9C", new[] { Rank.Five }, new[] { Rank.King, Rank.Nine })]
+    [TestCase(PokerHandType.Straight, "QD JC 10S 9H KC 4S 6S", new[] { Rank.King, Rank.Queen, Rank.Jack, Rank.Ten, Rank.Nine }, null)]
+    public void EvaluateSevenCardHand(PokerHandType expectedHandType, string hand, Rank[] expectedPrimaryRanks, Rank[]? expectedSecondaryRanks)
+    {
+        var cardSet = new CardSet(CardFormat.Default.ParseMultipleOrThrow(hand));
+        var pokerHand = new PokerEvaluator().EvaluateSevenCardHand(cardSet);
+
+        pokerHand.Type.Should().Be(expectedHandType);
+        pokerHand.PrimaryRanks.Should().BeEquivalentTo(expectedPrimaryRanks);
+        pokerHand.SecondaryRanks.Should().BeEquivalentTo(expectedSecondaryRanks ?? Array.Empty<Rank>());
     }
     
     [Test]

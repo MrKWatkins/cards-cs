@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrKWatkins.Cards.Poker", "M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrKWatkins.Cards.Poker.Tests", "MrKWatkins.Cards.Poker.Tests\MrKWatkins.Cards.Poker.Tests.csproj", "{4B3B78F3-1832-41CB-9378-3135A379EDE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrKWatkins.Cards.Testing", "MrKWatkins.Cards.Testing\MrKWatkins.Cards.Testing.csproj", "{A60502EB-2A28-4881-AF54-AA264AA8D661}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,9 @@ Global
 		{4B3B78F3-1832-41CB-9378-3135A379EDE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B3B78F3-1832-41CB-9378-3135A379EDE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B3B78F3-1832-41CB-9378-3135A379EDE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A60502EB-2A28-4881-AF54-AA264AA8D661}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A60502EB-2A28-4881-AF54-AA264AA8D661}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A60502EB-2A28-4881-AF54-AA264AA8D661}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A60502EB-2A28-4881-AF54-AA264AA8D661}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

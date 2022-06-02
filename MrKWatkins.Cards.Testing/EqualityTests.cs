@@ -1,11 +1,19 @@
 using System.Diagnostics.Contracts;
-using System.Reflection;
 using FluentAssertions;
+using NUnit.Framework;
 
-namespace MrKWatkins.Cards.Tests;
+namespace MrKWatkins.Cards.Testing;
 
 public static class EqualityTests
 {
+    [Pure]
+    public static IEnumerable<TestCaseData> CreateTestData<T>([JetBrains.Annotations.InstantHandle] Func<IEnumerable<T>> createDifferentInstances) =>
+        CreateTestData(createDifferentInstances, createDifferentInstances);
+    
+    [Pure]
+    public static IEnumerable<TestCaseData> CreateTestData<T>([JetBrains.Annotations.InstantHandle] Func<IEnumerable<T>> createLeftInstances, [JetBrains.Annotations.InstantHandle] Func<IEnumerable<T>> createRightInstances) =>
+        createLeftInstances().SelectMany((x, f) => createRightInstances().Select((y, g) => new TestCaseData(x, y, f == g)));
+    
     public static void AssertEqual<T>(T x, T y, bool expectedEqual)
         where T : IEquatable<T>
     {
@@ -72,18 +80,33 @@ public static class EqualityTests
     private static void AssertEqualityOperators<T>(T x, T? y, bool expectedEqual)
         where T : IEquatable<T>
     {
-        var equality = GetOperator<T>("op_Equality");
-        if (equality != null)
+        if (Operators<T>.HasEquality)
         {
-            CallOperator(equality, x, y).Should().Be(expectedEqual);
-            CallOperator(equality, y, x).Should().Be(expectedEqual);
+            Operators<T>.Equality(x, y).Should().Be(expectedEqual);
+            Operators<T>.Equality(y, x).Should().Be(expectedEqual);
         }
         
-        var inequality = GetOperator<T>("op_Inequality");
-        if (inequality != null)
+        if (Operators<T>.HasInequality)
         {
-            CallOperator(inequality, x, y).Should().Be(!expectedEqual);
-            CallOperator(inequality, y, x).Should().Be(!expectedEqual);
+            Operators<T>.Inequality(x, y).Should().Be(!expectedEqual);
+            Operators<T>.Inequality(y, x).Should().Be(!expectedEqual);
+        }
+
+        if (!expectedEqual)
+        {
+            return;
+        }
+        
+        if (Operators<T>.HasLessThanOrEqual)
+        {
+            Operators<T>.LessThanOrEqual(x, y).Should().BeTrue();
+            Operators<T>.LessThanOrEqual(y, x).Should().BeTrue();
+        }
+        
+        if (Operators<T>.HasGreaterThanOrEqual)
+        {
+            Operators<T>.GreaterThanOrEqual(x, y).Should().BeTrue();
+            Operators<T>.GreaterThanOrEqual(y, x).Should().BeTrue();
         }
     }
     
@@ -118,10 +141,4 @@ public static class EqualityTests
             (comparableY.CompareTo(x) == 0).Should().Be(expectedEqual);
         }
     }
-
-    [Pure]
-    private static MethodInfo? GetOperator<T>(string name) => typeof(T).GetMethod(name, BindingFlags.Public | BindingFlags.Static);
-    
-    [Pure]
-    private static bool CallOperator<T>(MethodInfo @operator, T? x, T? y) => (bool)@operator.Invoke(null, new object?[] { x, y })!;
 }

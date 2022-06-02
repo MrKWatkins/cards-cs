@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.Intrinsics.X86;
 using FluentAssertions;
+using MrKWatkins.Cards.Testing;
 using NUnit.Framework;
 
 namespace MrKWatkins.Cards.Tests;
@@ -101,15 +102,5 @@ public sealed class CardTests
     public void Equality(Card x, Card y, bool expectedEqual) => EqualityTests.AssertEqual(x, y, expectedEqual);
 
     [Pure]
-    public static IEnumerable<TestCaseData> EqualityTestCases()
-    {
-        var fullDeck = Card.FullDeck.ToList();
-        for (var f = 0; f < 52; f++)
-        {
-            for (var g = 0; g < 52; g++)
-            {
-                yield return new TestCaseData(fullDeck[f], fullDeck[g], f == g);
-            }
-        }
-    }
+    public static IEnumerable<TestCaseData> EqualityTestCases() => EqualityTests.CreateTestData(Card.EnumerateFullDeck);
 }

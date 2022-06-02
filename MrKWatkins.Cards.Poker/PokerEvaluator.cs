@@ -40,7 +40,7 @@ public sealed class PokerEvaluator
                 result = fiveCardResult;
             }
         }
-        return result!;
+        return result!.Value;
     }
 
     [Pure]
@@ -77,7 +77,9 @@ public sealed class PokerEvaluator
         var orReduction = handMask.HorizontalOr16();
         var orReductionCount = orReduction.PopCount();
 
-        // Test the most common branches first.
+        // Test the most common branches first; therefore not using a switch as we cannot guarantee the order of evaluation.
+        // Benchmarks with a switch expression showed it was slightly slower. Also tried an array of functions with a straight
+        // lookup into that by orReductionCount, that was slower still.
         if (orReductionCount == 5)
         {
             return FlushStraightOrHighCard(handMask, orReduction);
@@ -251,11 +253,9 @@ public sealed class PokerEvaluator
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private static bool IsSingleSuit(ulong handMask)
-    {
-        return (handMask & Bits0To15) == handMask ||
-               (handMask & Bits16To31) == handMask ||
-               (handMask & Bits32To47) == handMask ||
-               (handMask & Bits48To63) == handMask;
-    }
+    private static bool IsSingleSuit(ulong handMask) =>
+        (handMask & Bits0To15) == handMask ||
+        (handMask & Bits16To31) == handMask ||
+        (handMask & Bits32To47) == handMask ||
+        (handMask & Bits48To63) == handMask;
 }

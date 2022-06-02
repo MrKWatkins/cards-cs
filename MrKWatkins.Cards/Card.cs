@@ -100,22 +100,17 @@ public readonly struct Card : IEquatable<Card>
     /// <summary>
     /// A full deck of cards in suit then rank order, i.e AS, 2S, 3S..., KS, AH, 2H, etc.
     /// </summary>
-    public static IReadOnlyList<Card> FullDeck { get; } = CreateFullDeck();
+    public static IReadOnlyList<Card> FullDeck { get; } = EnumerateFullDeck().ToList();
     
     [Pure]
-    private static IReadOnlyList<Card> CreateFullDeck()
+    internal static IEnumerable<Card> EnumerateFullDeck()
     {
-        var fullDeck = new Card[52];
-        var index = 0;
         for (var suit = 0; suit < 4; suit++)
         {
             for (var rank = 0; rank < 13; rank++)
             {
-                fullDeck[index] = new Card((Rank) rank, (Suit) suit);
-                index++;
+                yield return new Card((Rank) rank, (Suit) suit);
             }
         }
-
-        return fullDeck;
     }
 }

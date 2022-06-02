@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\MrKWatkins.Cards.Testing\MrKWatkins.Cards.Testing.csproj" />
       <ProjectReference Include="..\MrKWatkins.Cards\MrKWatkins.Cards.csproj" />
     </ItemGroup>
 
