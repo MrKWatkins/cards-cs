@@ -1,6 +1,5 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics.X86;
 using MrKWatkins.Cards.Collections;
 
 namespace MrKWatkins.Cards.Poker;
@@ -176,20 +175,8 @@ public sealed class PokerEvaluator
         // All either have SD or HC.
         var sdAndHcRankMasks = handMask & (handMask >> 32);
 
-        // Try SHD and HDC first as they require less operations.
-        var threeMask = (handMask >> 16) & sdAndHcRankMasks;
-
-        if (threeMask == 0)
-        {
-            // Must be SDC or SHC.
-            var cAndSRankMask = Bmi2.X64.IsSupported 
-                ? Bmi2.X64.ParallelBitExtract(handMask, Bits0To15 | Bits48To63)
-                : Bits0To31 & ((handMask << 16) | (handMask >> 48));
-
-            threeMask = cAndSRankMask & sdAndHcRankMasks;
-        }
-
-        var threeRankMask = Bits0To15 & (threeMask | (threeMask >> 16));
+        // We now have a bit corresponding to the three card rank in bits 0 -> 15 or bits 16 -> 31. Isolate it.
+        var threeRankMask = ((sdAndHcRankMasks >> 16) | sdAndHcRankMasks) & Bits0To15;
 
         var highCardsRankMask = orReduction ^ threeRankMask;
 
