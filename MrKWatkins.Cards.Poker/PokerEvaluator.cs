@@ -241,8 +241,9 @@ public sealed class PokerEvaluator
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static bool IsSingleSuit(ulong handMask) =>
-        (handMask & Bits0To15) == handMask ||
-        (handMask & Bits16To31) == handMask ||
-        (handMask & Bits32To47) == handMask ||
+        // Performs better using | rather than || as it avoids branching, branch prediction, etc.
+        (handMask & Bits0To15) == handMask |
+        (handMask & Bits16To31) == handMask |
+        (handMask & Bits32To47) == handMask |
         (handMask & Bits48To63) == handMask;
 }
