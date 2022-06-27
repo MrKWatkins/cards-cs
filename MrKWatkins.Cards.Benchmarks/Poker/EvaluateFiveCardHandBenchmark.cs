@@ -18,4 +18,22 @@ public class EvaluateFiveCardHandBenchmark
             var _ = evaluator.EvaluateFiveCardHand(hand);
         }
     }
+    
+    [Benchmark]
+    public void LookupFiveCardHand()
+    {
+        foreach (var hand in allFiveCardHands)
+        {
+            var _ = LookupEvaluator.Instance.EvaluateFiveCardHand(hand);
+        }
+    }
+    
+    [Benchmark]
+    public void LookupFiveCardHand2()
+    {
+        foreach (var hand in allFiveCardHands)
+        {
+            var _ = LookupEvaluator2.Instance.EvaluateFiveCardHand(hand);
+        }
+    }
 }

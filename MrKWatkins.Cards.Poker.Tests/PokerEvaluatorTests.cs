@@ -105,6 +105,28 @@ public sealed class PokerEvaluatorTests
         pokerHand.PrimaryRanks.Should().BeEquivalentTo(expectedPrimaryRanks);
         pokerHand.SecondaryRanks.Should().BeEquivalentTo(expectedSecondaryRanks ?? Array.Empty<Rank>());
     }
+    
+    [Test]
+    public void Temp()
+    {
+        var l = LookupEvaluator.Instance;
+        
+        var allFiveCardHands = Card.FullDeck.Combinations(5);
+        var max = allFiveCardHands.Select(BuildNumber).Max();
+    }
+
+    public static int BuildNumber(IEnumerable<Card> hand)
+    {
+        var number = 0;/*
+        var sameSuit = 
+
+        if (cards.Select(c => c.Suit).ToHashSet().Count == 1)
+        {
+            number *= 2;
+        }
+*/
+        return number;
+    }
 
     [Test]
     public void EvaluateFiveCardHand_AllHands()
@@ -112,7 +134,7 @@ public sealed class PokerEvaluatorTests
         var allFiveCardHands = Card.FullDeck.Combinations(5);
 
         var evaluator = new PokerEvaluator();
-        var handsByType = CountHandTypes(allFiveCardHands, evaluator.EvaluateFiveCardHand);
+        var handsByType = CountHandTypes(allFiveCardHands, LookupEvaluator2.Instance.EvaluateFiveCardHand);
 
         var expected = new Dictionary<PokerHandType, int>
         {
