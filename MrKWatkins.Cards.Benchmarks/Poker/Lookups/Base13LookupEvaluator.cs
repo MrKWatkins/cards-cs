@@ -1,22 +1,24 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using MrKWatkins.Cards.Collections;
+using MrKWatkins.Cards.Poker;
 
-namespace MrKWatkins.Cards.Poker;
+namespace MrKWatkins.Cards.Benchmarks.Poker.Lookups;
 
-public sealed class LookupEvaluator2
+public sealed class Base13LookupEvaluator
 {
-    public static readonly LookupEvaluator2 Instance = Build();
+    public static readonly Base13LookupEvaluator Instance = Build();
     private readonly PokerHand[] lookup;
 
-    private LookupEvaluator2(PokerHand[] lookup)
+    private Base13LookupEvaluator(PokerHand[] lookup)
     {
         this.lookup = lookup;
     }
 
     [Pure]
-    private static LookupEvaluator2 Build()
+    private static Base13LookupEvaluator Build()
     {
+        // 5 x 13 for ranks x 2 for same suit/not same suit.
         var lookup = new PokerHand[742586];
         var evaluator = new PokerEvaluator();
         foreach (var hand in Card.FullDeck.Combinations(5))
@@ -25,10 +27,11 @@ public sealed class LookupEvaluator2
             lookup[key] = evaluator.EvaluateFiveCardHand(hand);
         }
 
-        return new LookupEvaluator2(lookup);
+        return new Base13LookupEvaluator(lookup);
     }
 
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static int GetKey(IEnumerable<Card> hand)
     {
         var number = 0;

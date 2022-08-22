@@ -1,3 +1,5 @@
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 using FluentAssertions;
 using MrKWatkins.Cards.Collections;
 using MrKWatkins.Cards.Text;
@@ -107,25 +109,56 @@ public sealed class PokerEvaluatorTests
     }
     
     [Test]
-    public void Temp()
+    public void RankAddTest()
     {
-        var l = LookupEvaluator.Instance;
-        
-        var allFiveCardHands = Card.FullDeck.Combinations(5);
-        var max = allFiveCardHands.Select(BuildNumber).Max();
+        var hand = CardFormat.Default.ParseMultipleOrThrow("8D 8C 2D 2C KH");
+
+        var rank = CalculateRankNumber(hand);
+        var intrinsic = CalculateRankNumberIntrinsic2(hand);
+
+        intrinsic.Should().Be(rank);
     }
 
-    public static int BuildNumber(IEnumerable<Card> hand)
+    private static int CalculateRankNumber(IReadOnlyList<Card> hand)
     {
-        var number = 0;/*
-        var sameSuit = 
-
-        if (cards.Select(c => c.Suit).ToHashSet().Count == 1)
+        var number = 0;
+        foreach (var card in hand)
         {
-            number *= 2;
+            number *= 13;
+            number += (int)card.Rank;
         }
-*/
+
         return number;
+    }
+
+    private static int CalculateRankNumberIntrinsic1(IReadOnlyList<Card> hand)
+    {
+        var vector = Vector128.Create((short)hand[0].Rank, (short)hand[1].Rank, (short)hand[2].Rank, (short)hand[3].Rank, (short)hand[4].Rank, 0, 0, 0);
+
+        var multiply = Vector128.Create(
+            Vector64.Create(13 * 13 * 13 * 13, 13 * 13 * 13, 13 * 13, 13),
+            Vector64.Create(1, 0, 0, 0));
+
+        var result1 = Sse2.MultiplyAddAdjacent(vector, multiply);
+
+        var result2 = Ssse3.HorizontalAdd(result1, result1);
+        var result3 = Ssse3.HorizontalAdd(result2, result2);
+
+        return result3.ToScalar();
+    }
+    
+    private static int CalculateRankNumberIntrinsic2(IReadOnlyList<Card> hand)
+    {
+        var vector = Vector128.Create((short)hand[0].Rank, (short)hand[1].Rank, (short)hand[2].Rank, (short)hand[3].Rank, 0, 0, 0, 0);
+
+        var multiply = Vector128.Create(
+            Vector64.Create(13 * 13 * 13 * 13, 13 * 13 * 13, 13 * 13, 13),
+            Vector64.Create(0, 0, 0, 0));
+
+        var result1 = Sse2.MultiplyAddAdjacent(vector, multiply);
+
+        var result2 = Ssse3.HorizontalAdd(result1, result1);
+        return result2.ToScalar() + (int)hand[4].Rank;
     }
 
     [Test]
@@ -134,7 +167,7 @@ public sealed class PokerEvaluatorTests
         var allFiveCardHands = Card.FullDeck.Combinations(5);
 
         var evaluator = new PokerEvaluator();
-        var handsByType = CountHandTypes(allFiveCardHands, LookupEvaluator2.Instance.EvaluateFiveCardHand);
+        var handsByType = CountHandTypes(allFiveCardHands, evaluator.EvaluateFiveCardHand);
 
         var expected = new Dictionary<PokerHandType, int>
         {

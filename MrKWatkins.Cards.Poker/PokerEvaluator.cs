@@ -5,7 +5,7 @@ using MrKWatkins.Cards.Collections;
 namespace MrKWatkins.Cards.Poker;
 
 [JetBrains.Annotations.PublicAPI]
-public sealed class PokerEvaluator
+public sealed class PokerEvaluator : IPokerEvaluator
 {
     private const ulong AceHighRankMask = 1UL << 13;
     private const ulong Bits0To15 = 0x000000000000FFFF;
@@ -13,6 +13,10 @@ public sealed class PokerEvaluator
     private const ulong Bits16To31 = 0x00000000FFFF0000;
     private const ulong Bits32To47 = 0x0000FFFF00000000;
     private const ulong Bits48To63 = 0xFFFF000000000000;
+
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public PokerHand EvaluateSevenCardHand(IEnumerable<Card> hand) => EvaluateSevenCardHand(hand.ToList());
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
@@ -41,6 +45,8 @@ public sealed class PokerEvaluator
         }
         return result!.Value;
     }
+
+    public PokerHand EvaluateFiveCardHand(IReadOnlyCollection<Card> hand) => EvaluateFiveCardHand((IEnumerable<Card>)hand);
 
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
